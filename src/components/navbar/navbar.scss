@@ -1,0 +1,36 @@
+.navbar {
+  height: 50px;
+    display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #555;
+  width: 100%;
+  justify-content: end;
+  -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+    box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
+  background-color: #fff;
+  .wrapper {
+    display: flex;
+    align-items: end;
+    position: relative;
+    z-index: 1;
+    .marquee {
+      font-size: small;
+      z-index: -1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: marquee;
+      animation: marquee 10s linear infinite;
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(calc(-100% + 250px));
+      }
+    }
+  }
+}
