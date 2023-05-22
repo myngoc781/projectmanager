@@ -4,28 +4,81 @@ import { DataGrid } from "@mui/x-data-grid";
 import { userColumns, userRows } from "../../datatablesource";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../firbase";
-import { collection, deleteDoc, addDoc, arrayRemove, doc, getDoc, getDocs, onSnapshot, updateDoc, arrayUnion, serverTimestamp } from "firebase/firestore";
 import {
-  Col, Row, Table, Spin, Button, List, Card, Popover, DatePicker, Input, Space,
-  Form, Progress, Modal, Tooltip, Popconfirm, notification, Statistic, Tag, Breadcrumb, Select, Avatar, Checkbox, message
-} from 'antd';
-import { CheckCircleOutlined, EditOutlined, DeleteOutlined, CalendarOutlined, DashOutlined, ArrowRightOutlined, AlignLeftOutlined, TagOutlined, PlusOutlined, ScheduleOutlined, TeamOutlined, StockOutlined, CheckSquareOutlined, FieldTimeOutlined, UserAddOutlined } from '@ant-design/icons';
+  collection,
+  deleteDoc,
+  addDoc,
+  arrayRemove,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  updateDoc,
+  arrayUnion,
+  serverTimestamp,
+} from "firebase/firestore";
+import {
+  Col,
+  Row,
+  Table,
+  Spin,
+  Button,
+  List,
+  Card,
+  Popover,
+  DatePicker,
+  Input,
+  Space,
+  Form,
+  Progress,
+  Modal,
+  Tooltip,
+  Popconfirm,
+  notification,
+  Statistic,
+  Tag,
+  Breadcrumb,
+  Select,
+  Avatar,
+  Checkbox,
+  message,
+} from "antd";
+import {
+  CheckCircleOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  CalendarOutlined,
+  DashOutlined,
+  ArrowRightOutlined,
+  AlignLeftOutlined,
+  TagOutlined,
+  PlusOutlined,
+  ScheduleOutlined,
+  TeamOutlined,
+  StockOutlined,
+  CheckSquareOutlined,
+  FieldTimeOutlined,
+  UserAddOutlined,
+  CommentOutlined,
+  SendOutlined,
+  DeleteFilled,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 import { boardsRef } from "../../api/firebase";
-import AddForm from '../addForm/add-form.component';
+import AddForm from "../addForm/add-form.component";
 import { async } from "@firebase/util";
 import MemberList from "../../components/modalCommons/MemberList";
 import LabelList from "../../components/modalCommons/LabelList";
 import DateList from "../../components/modalCommons/dateList";
 import MoveCardList from "../../components/modalCommons/moveCardLists";
-import moment from 'moment';
+import moment from "moment";
+import { Face } from "@mui/icons-material";
 
 const { Meta } = Card;
 const { Column } = Table;
 const { TextArea } = Input;
 
-
 const DetailsProjectComponent = () => {
-
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [form] = Form.useForm();
@@ -38,14 +91,14 @@ const DetailsProjectComponent = () => {
   const [editCommentForm] = Form.useForm();
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [columnName, setColumnName] = useState('');
+  const [columnName, setColumnName] = useState("");
   const [columnsData, setColumnData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cardInputs, setCardInputs] = useState({});
   const [showAddCard, setShowAddCard] = useState(null);
   const [showAdd, setShowAdd] = useState(true);
-  const [newCardName, setNewCardName] = useState('');
-  const [cardUnsubscribes, setCardUnsubscribes] = useState('');
+  const [newCardName, setNewCardName] = useState("");
+  const [cardUnsubscribes, setCardUnsubscribes] = useState("");
   const [showModal2, setShowModal2] = useState(false);
   const [addTask, setAddTask] = useState(false);
   const [users, setUsers] = useState([]);
@@ -85,7 +138,6 @@ const DetailsProjectComponent = () => {
   const [showModal1, setShowModal1] = useState(false);
   const [role, setRole] = useState(false);
 
-
   const showModal = () => {
     setIsVisible(true);
   };
@@ -111,26 +163,32 @@ const DetailsProjectComponent = () => {
       });
     }
     try {
-      const docRef = await addDoc(collection(db, 'boards', id, 'columns', columnId, 'cards'), { name: newCardName });
-      console.log('Card created with ID: ', docRef.id);
+      const docRef = await addDoc(
+        collection(db, "boards", id, "columns", columnId, "cards"),
+        { name: newCardName }
+      );
+      console.log("Card created with ID: ", docRef.id);
       handleAddNotification("Thêm card mới", "Thành viên vừa thêm card mới");
 
       setShowAddCard(null);
-      setNewCardName('');
+      setNewCardName("");
     } catch (error) {
-      console.error('Error creating card: ', error);
+      console.error("Error creating card: ", error);
     }
   };
 
   const handleCloseCard = () => {
-    setShowAddCard('');
-  }
+    setShowAddCard("");
+  };
 
   const handleOk = async () => {
     if (columnName) {
       try {
         // Thêm cột mới vào Firestore
-        const docRef = await addDoc(collection(db, `boards/${id}/columns/`), { name: columnName, createdAt: serverTimestamp() });
+        const docRef = await addDoc(collection(db, `boards/${id}/columns/`), {
+          name: columnName,
+          createdAt: serverTimestamp(),
+        });
         setColumnName(null);
         form.resetFields();
         console.log("Column created with ID: ", docRef.id);
@@ -139,7 +197,7 @@ const DetailsProjectComponent = () => {
         console.error("Error creating column: ", e);
       }
     }
-  }
+  };
 
   const handleAddComment = async () => {
     console.log(id);
@@ -153,13 +211,24 @@ const DetailsProjectComponent = () => {
           try {
             // Thêm cột mới vào Firestore
             const user = JSON.parse(localStorage.getItem("user2"));
-            const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+            const cardsRef = doc(
+              db,
+              `boards/${id}/columns/${columnId}/cards/${cardId}`
+            );
             const currentTime = new Date();
 
             await updateDoc(cardsRef, {
-              comments: arrayUnion({ text: commentData, displayName: user.displayName, img: user.img, time: currentTime.toString() }),
+              comments: arrayUnion({
+                text: commentData,
+                displayName: user.displayName,
+                img: user.img,
+                time: currentTime.toString(),
+              }),
             });
-            handleAddNotification("Thêm comment mới", "Thành viên vừa thêm comment mới");
+            handleAddNotification(
+              "Thêm comment mới",
+              "Thành viên vừa thêm comment mới"
+            );
 
             setIsVisible(false);
             setLoading(false);
@@ -175,7 +244,7 @@ const DetailsProjectComponent = () => {
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   const handleAddDescription = async () => {
     console.log(id);
@@ -187,11 +256,17 @@ const DetailsProjectComponent = () => {
         if (descriptionData) {
           try {
             // Thêm cột mới vào Firestore
-            const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+            const cardsRef = doc(
+              db,
+              `boards/${id}/columns/${columnId}/cards/${cardId}`
+            );
             await updateDoc(cardsRef, {
               description: descriptionData,
             });
-            handleAddNotification("Thêm mô tả", "Thành viên vừa thêm mô tả mới");
+            handleAddNotification(
+              "Thêm mô tả",
+              "Thành viên vừa thêm mô tả mới"
+            );
 
             setIsVisible(false);
             setVisibleDes(false);
@@ -206,7 +281,7 @@ const DetailsProjectComponent = () => {
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   const handleAddTitle = async () => {
     console.log(id);
@@ -218,15 +293,19 @@ const DetailsProjectComponent = () => {
         if (titleData) {
           try {
             // Thêm cột mới vào Firestore
-            const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+            const cardsRef = doc(
+              db,
+              `boards/${id}/columns/${columnId}/cards/${cardId}`
+            );
             await updateDoc(cardsRef, {
               name: titleData,
             });
             setIsVisible(false);
             setVisibleTitle(false);
-            handleAddNotification("Thêm card mới", "Thành viên vừa thêm card mới");
-
-
+            handleAddNotification(
+              "Thêm card mới",
+              "Thành viên vừa thêm card mới"
+            );
           } catch (e) {
             console.error("Error creating column: ", e);
           }
@@ -238,11 +317,9 @@ const DetailsProjectComponent = () => {
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
-  const handleSave = async () => {
-
-  }
+  const handleSave = async () => {};
 
   const handleAddTask = async () => {
     setAddTask(false);
@@ -251,8 +328,8 @@ const DetailsProjectComponent = () => {
       .validateFields()
       .then(async (values) => {
         const taskData = values.nameTask; // Lấy data từ form
-        const dateData = values.dateEnd.format('YYYY-MM-DD'); // Lấy data từ form
-        const member = values.member
+        const dateData = values.dateEnd.format("YYYY-MM-DD"); // Lấy data từ form
+        const member = values.member;
         console.log(taskData);
         console.log(dateData);
         // Thực hiện xử lý logic của bạn với commentData
@@ -260,13 +337,24 @@ const DetailsProjectComponent = () => {
           try {
             // Thêm cột mới vào Firestore
             const user = JSON.parse(localStorage.getItem("user2"));
-            const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
-            console.log(cardsRef)
+            const cardsRef = doc(
+              db,
+              `boards/${id}/columns/${columnId}/cards/${cardId}`
+            );
+            console.log(cardsRef);
             await updateDoc(cardsRef, {
-              tasks: arrayUnion({ name: taskData, dateEnd: dateData, done: false, member: member }),
+              tasks: arrayUnion({
+                name: taskData,
+                dateEnd: dateData,
+                done: false,
+                member: member,
+              }),
             });
             await handleListCard();
-            handleAddNotification("Thêm task mới", "Thành viên vừa thêm task mới");
+            handleAddNotification(
+              "Thêm task mới",
+              "Thành viên vừa thêm task mới"
+            );
 
             setIsVisible(false);
             setVisibleTask(false);
@@ -281,13 +369,16 @@ const DetailsProjectComponent = () => {
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   const handleAddLabel = async (name) => {
     try {
       // Thêm cột mới vào Firestore
-      const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
-      console.log(cardsRef)
+      const cardsRef = doc(
+        db,
+        `boards/${id}/columns/${columnId}/cards/${cardId}`
+      );
+      console.log(cardsRef);
       await updateDoc(cardsRef, {
         label: name,
       });
@@ -296,7 +387,7 @@ const DetailsProjectComponent = () => {
     } catch (e) {
       console.error("Error creating column: ", e);
     }
-  }
+  };
 
   const handleCloseTask = async () => {
     setAddTask(false);
@@ -307,25 +398,27 @@ const DetailsProjectComponent = () => {
     const user2 = JSON.parse(localStorage.getItem("user2"));
     setUserData(user2.position);
 
-    const boardRef = doc(db, 'boards', id);
+    const boardRef = doc(db, "boards", id);
 
     // Define state variables
 
     // Subscribe to changes in the "columns" collection of the board
     const columnsUnsubscribe = onSnapshot(
-      collection(db, 'boards', id, 'columns'),
+      collection(db, "boards", id, "columns"),
       (snapshot) => {
-        const columnsData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-          cards: [] // add an empty array to store cards for each column
-        })).sort((a, b) => a.data.createdAt - b.data.createdAt);
+        const columnsData = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+            cards: [], // add an empty array to store cards for each column
+          }))
+          .sort((a, b) => a.data.createdAt - b.data.createdAt);
 
         // Subscribe to changes in the "cards" collection of each column
         columnsData.forEach((columnData) => {
           const columnId = columnData.id;
           const cardsUnsubscribe = onSnapshot(
-            collection(db, 'boards', id, 'columns', columnId, 'cards'),
+            collection(db, "boards", id, "columns", columnId, "cards"),
             (snapshot) => {
               const cardsData = snapshot.docs.map((doc) => ({
                 id: doc.id,
@@ -333,22 +426,24 @@ const DetailsProjectComponent = () => {
               }));
 
               setColumnData((prevColumnsData) => {
-                const updatedColumnsData = prevColumnsData.map((prevColumnData) => {
-                  if (prevColumnData.id === columnId) {
-                    return {
-                      ...prevColumnData,
-                      cards: cardsData,
-                    };
-                  } else {
-                    return prevColumnData;
+                const updatedColumnsData = prevColumnsData.map(
+                  (prevColumnData) => {
+                    if (prevColumnData.id === columnId) {
+                      return {
+                        ...prevColumnData,
+                        cards: cardsData,
+                      };
+                    } else {
+                      return prevColumnData;
+                    }
                   }
-                });
+                );
 
                 return updatedColumnsData;
               });
             },
             (error) => {
-              console.log('Error getting cards data: ', error);
+              console.log("Error getting cards data: ", error);
             }
           );
 
@@ -363,7 +458,7 @@ const DetailsProjectComponent = () => {
         setLoading(false);
       },
       (error) => {
-        console.log('Error getting columns data: ', error);
+        console.log("Error getting columns data: ", error);
         setLoading(false);
       }
     );
@@ -379,7 +474,10 @@ const DetailsProjectComponent = () => {
     const fetchUsers = async () => {
       const usersCollection = collection(db, "users");
       const usersSnapshot = await getDocs(usersCollection);
-      const usersData = usersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const usersData = usersSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       await fetchBoardData();
       setUsers(usersData);
     };
@@ -389,10 +487,11 @@ const DetailsProjectComponent = () => {
     // Return the unsubscribe function to clean up the listeners
     return () => {
       columnsUnsubscribe();
-      Object.values(cardUnsubscribes).forEach((cardUnsubscribe) => cardUnsubscribe());
+      Object.values(cardUnsubscribes).forEach((cardUnsubscribe) =>
+        cardUnsubscribe()
+      );
     };
   }, [db, id]);
-
 
   const handleDelete = (id) => {
     const docRef = addDoc(db, "users", id);
@@ -409,7 +508,10 @@ const DetailsProjectComponent = () => {
   // Define a function to handle the click event on the card name
   const handleCardClick = async (card, column) => {
     try {
-      const cardsRef = doc(db, `boards/${id}/columns/${column.id}/cards/${card.id}`);
+      const cardsRef = doc(
+        db,
+        `boards/${id}/columns/${column.id}/cards/${card.id}`
+      );
       const cardSnapshot = await getDoc(cardsRef);
       if (cardSnapshot.exists()) {
         const cardData = cardSnapshot.data();
@@ -418,8 +520,8 @@ const DetailsProjectComponent = () => {
 
         if (cardData?.tasks?.length > 0) {
           const totalTasks = cardData.tasks.length;
-          const doneTasks = cardData.tasks.filter(task => task.done).length;
-          const percentComplete = doneTasks / totalTasks * 100;
+          const doneTasks = cardData.tasks.filter((task) => task.done).length;
+          const percentComplete = (doneTasks / totalTasks) * 100;
           SetNumberCardDone(percentComplete);
           console.log("Number of tasks done:", percentComplete);
         } else {
@@ -431,7 +533,7 @@ const DetailsProjectComponent = () => {
       } else {
         console.log("No such document!");
       }
-      console.log(cardsRef)
+      console.log(cardsRef);
       setIsVisible(false);
     } catch (e) {
       console.error("Error creating column: ", e);
@@ -446,7 +548,9 @@ const DetailsProjectComponent = () => {
   const handleDeleteCard = async (cardId, columnId) => {
     try {
       // Xóa thẻ trong Firestore ở đây
-      await deleteDoc(doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`));
+      await deleteDoc(
+        doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`)
+      );
       handleAddNotification("Xóa card", "Thành viên vừa xóa card");
 
       console.log("Card deleted successfully!");
@@ -463,23 +567,26 @@ const DetailsProjectComponent = () => {
     } catch (e) {
       console.error("Error deleting column: ", e);
     }
-  }
+  };
 
   const handleShowComment = () => {
-    setVisibleComment(!visibleComment)
-  }
+    setVisibleComment(!visibleComment);
+  };
 
   const handleShowTask = () => {
-    setVisibleTask(!visibleTask)
-  }
+    setVisibleTask(!visibleTask);
+  };
 
   const handleShowDes = () => {
-    setVisibleDes(!visibleDes)
-  }
+    setVisibleDes(!visibleDes);
+  };
 
   const handleListModal = async () => {
     try {
-      const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+      const cardsRef = doc(
+        db,
+        `boards/${id}/columns/${columnId}/cards/${cardId}`
+      );
       const cardSnapshot = await getDoc(cardsRef);
       if (cardSnapshot.exists()) {
         const cardData = cardSnapshot.data();
@@ -489,12 +596,12 @@ const DetailsProjectComponent = () => {
       } else {
         console.log("No such document!");
       }
-      console.log(cardsRef)
+      console.log(cardsRef);
       setIsVisible(false);
     } catch (e) {
       console.error("Error creating column: ", e);
     }
-  }
+  };
 
   // Define a function to handle the close event on the modal
   const handleCloseModal = () => {
@@ -504,15 +611,20 @@ const DetailsProjectComponent = () => {
   const handleSelectChange = async (value) => {
     setSelectedValue(value);
     try {
-
       const cardsRef = doc(db, `boards/${id}`);
       const userRef = doc(collection(db, "users"), value);
       const userDoc = await getDoc(userRef);
       const user = userDoc.data();
       await updateDoc(cardsRef, {
-        member: arrayUnion({ id: value, displayName: user.displayName, img: user.img, position: user.position, email: user.email }),
+        member: arrayUnion({
+          id: value,
+          displayName: user.displayName,
+          img: user.img,
+          position: user.position,
+          email: user.email,
+        }),
       });
-      const boardDoc = await getDoc(doc(db, 'boards', id));
+      const boardDoc = await getDoc(doc(db, "boards", id));
       const updatedBoardData = boardDoc.data();
       setBoardData(updatedBoardData);
 
@@ -521,21 +633,30 @@ const DetailsProjectComponent = () => {
     } catch (e) {
       console.error("Error creating column: ", e);
     }
-  }
+  };
 
   const onChangeCheckbox = async (event) => {
     const taskIndex = event.target.value;
     const newTasks = [...dataCard.tasks];
     newTasks[taskIndex].done = event.target.checked;
-    const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+    const cardsRef = doc(
+      db,
+      `boards/${id}/columns/${columnId}/cards/${cardId}`
+    );
     await updateDoc(cardsRef, { tasks: newTasks });
-    handleAddNotification("Cập nhật trạng thái task", "Thành viên vừa cập nhật trạng thái task");
+    handleAddNotification(
+      "Cập nhật trạng thái task",
+      "Thành viên vừa cập nhật trạng thái task"
+    );
 
     await handleListCard();
-  }
+  };
 
   const handleListCard = async () => {
-    const cardsRef2 = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+    const cardsRef2 = doc(
+      db,
+      `boards/${id}/columns/${columnId}/cards/${cardId}`
+    );
     const cardSnapshot = await getDoc(cardsRef2);
     if (cardSnapshot.exists()) {
       const cardData = cardSnapshot.data();
@@ -544,8 +665,8 @@ const DetailsProjectComponent = () => {
 
       if (cardData?.tasks?.length > 0) {
         const totalTasks = cardData.tasks.length;
-        const doneTasks = cardData.tasks.filter(task => task.done).length;
-        const percentComplete = doneTasks / totalTasks * 100;
+        const doneTasks = cardData.tasks.filter((task) => task.done).length;
+        const percentComplete = (doneTasks / totalTasks) * 100;
         SetNumberCardDone(percentComplete);
         console.log("Number of tasks done:", percentComplete);
       } else {
@@ -557,7 +678,7 @@ const DetailsProjectComponent = () => {
     } else {
       console.log("No such document!");
     }
-  }
+  };
 
   const [cardTitle, setCardTitle] = useState("");
   const { listKey, creatingCard, handleCreatingCard } = "props";
@@ -582,62 +703,64 @@ const DetailsProjectComponent = () => {
   const handleMemberData = (data) => {
     console.log(data);
     setBoardData(data);
-  }
+  };
 
   const handleCardData = (data) => {
     console.log(data);
     setDataCard(data);
-  }
+  };
 
   const [showModalLabel2, setShowModalLabel2] = useState(false);
   const [showModalDate, setShowModalDate] = useState(false);
   const [showModalMoveCard, setShowModalMoveCard] = useState(false);
 
   const showModalLabel = () => {
-    setShowModalLabel2(!showModalLabel2)
-  }
+    setShowModalLabel2(!showModalLabel2);
+  };
 
   const closeModalLabel = () => {
-    setShowModalLabel2(!showModalLabel2)
-  }
+    setShowModalLabel2(!showModalLabel2);
+  };
 
   const handleShowModalDate = () => {
-    setShowModalDate(!showModalDate)
-  }
+    setShowModalDate(!showModalDate);
+  };
 
   const handleCloseModalDate = () => {
-    setShowModalDate(!showModalDate)
-  }
+    setShowModalDate(!showModalDate);
+  };
 
   const handleShowModalMoveCard = () => {
-    setShowModalMoveCard(!showModalMoveCard)
-  }
+    setShowModalMoveCard(!showModalMoveCard);
+  };
 
   const handleCloseModalMoveCard = () => {
-    setShowModalMoveCard(!showModalMoveCard)
-  }
+    setShowModalMoveCard(!showModalMoveCard);
+  };
 
   const handleCloseModalAll = () => {
     setShowModalMoveCard(!showModalMoveCard);
     setShowModal2(!showModal2);
-  }
+  };
 
   const statusOptions = {
-    completed: 'Hoàn thành',
-    inProgress: 'Đang triển khai',
-    onHold: 'Tạm dừng',
+    completed: "Hoàn thành",
+    inProgress: "Đang triển khai",
+    onHold: "Tạm dừng",
   };
 
   const handleDeleteTask = async (task) => {
     try {
       // Xóa task khỏi Firestore
-      const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+      const cardsRef = doc(
+        db,
+        `boards/${id}/columns/${columnId}/cards/${cardId}`
+      );
       await updateDoc(cardsRef, {
         tasks: dataCard?.tasks.filter((item) => item !== task),
       });
       handleListModal();
       handleAddNotification("Xóa task", "Thành viên vừa xóa task" + task.name);
-
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -656,7 +779,10 @@ const DetailsProjectComponent = () => {
       // Lấy dữ liệu từ form chỉnh sửa task
       const { name, dateEnd } = values;
       // Cập nhật task trong Firestore
-      const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+      const cardsRef = doc(
+        db,
+        `boards/${id}/columns/${columnId}/cards/${cardId}`
+      );
       await updateDoc(cardsRef, {
         tasks: arrayUnion({ ...currentTask, name, dateEnd }),
       });
@@ -677,13 +803,18 @@ const DetailsProjectComponent = () => {
   const handleDeleteComment = async (comment) => {
     try {
       // Xóa comment khỏi Firestore
-      const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+      const cardsRef = doc(
+        db,
+        `boards/${id}/columns/${columnId}/cards/${cardId}`
+      );
       await updateDoc(cardsRef, {
         comments: arrayRemove(comment),
       });
       handleListModal();
-      handleAddNotification("Xóa comment", "Thành viên vừa xóa comment" + comment);
-
+      handleAddNotification(
+        "Xóa comment",
+        "Thành viên vừa xóa comment" + comment
+      );
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
@@ -700,15 +831,20 @@ const DetailsProjectComponent = () => {
 
         try {
           // Cập nhật mảng comments trong Firestore
-          const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+          const cardsRef = doc(
+            db,
+            `boards/${id}/columns/${columnId}/cards/${cardId}`
+          );
           await updateDoc(cardsRef, {
             comments: updatedComments,
           });
           handleListModal();
           setShowEditCommentModal(false);
 
-          handleAddNotification("Cập nhật Comment", "Thành viên vừa cập nhật comment");
-
+          handleAddNotification(
+            "Cập nhật Comment",
+            "Thành viên vừa cập nhật comment"
+          );
         } catch (error) {
           console.error("Error updating comment:", error);
         }
@@ -731,12 +867,15 @@ const DetailsProjectComponent = () => {
           ...selectedTask,
           name: values.name,
           dateEnd: values.dateEnd.format("YYYY-MM-DD"),
-          member: values.member
+          member: values.member,
         };
 
         try {
           // Xóa task cũ khỏi Firestore
-          const cardsRef = doc(db, `boards/${id}/columns/${columnId}/cards/${cardId}`);
+          const cardsRef = doc(
+            db,
+            `boards/${id}/columns/${columnId}/cards/${cardId}`
+          );
           await updateDoc(cardsRef, {
             tasks: arrayRemove(selectedTask),
           });
@@ -746,7 +885,10 @@ const DetailsProjectComponent = () => {
             tasks: arrayUnion(updatedTask),
           });
 
-          handleAddNotification("Cập nhật Task", "Thành viên vừa cập nhật task");
+          handleAddNotification(
+            "Cập nhật Task",
+            "Thành viên vừa cập nhật task"
+          );
 
           handleListModal();
           setShowEditTaskModal(false);
@@ -764,7 +906,7 @@ const DetailsProjectComponent = () => {
     const user = users.find((user) => user.id === userId);
 
     // Trả về thông tin người dùng (ví dụ: displayName, avatar, v.v.)
-    return user ? user.displayName : '';
+    return user ? user.displayName : "";
   };
 
   const handleAddNotification = async (title, message) => {
@@ -786,7 +928,7 @@ const DetailsProjectComponent = () => {
       console.log(newNotification);
 
       // Lấy tham chiếu tới bảng board
-      const boardRef = doc(db, 'boards', id);
+      const boardRef = doc(db, "boards", id);
 
       // Đọc dữ liệu hiện tại của danh sách thông báo
       const boardDoc = await getDoc(boardRef);
@@ -805,33 +947,49 @@ const DetailsProjectComponent = () => {
 
       // Hiển thị thông báo hoặc thực hiện các hành động khác sau khi thêm thông báo thành công
     } catch (error) {
-      console.error('Error adding notification:', error);
+      console.error("Error adding notification:", error);
     }
   };
-
 
   return (
     <div className="datatable">
       <Spin spinning={loading}>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
           <table>
             <tr>
               <td style={{ fontSize: 21, fontWeight: 600 }}>Dự án:</td>
-              <td style={{ fontSize: 21, fontWeight: 600 }}>{boardData?.name}</td>
+              <td style={{ fontSize: 21, fontWeight: 600 }}>
+                {boardData?.name}
+              </td>
             </tr>
             <tr>
               <td style={{ fontSize: 18, fontWeight: 500 }}>Mô tả dự án:</td>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>{boardData?.description}</td>
+              <td style={{ fontSize: 18, fontWeight: 500 }}>
+                {boardData?.description}
+              </td>
             </tr>
             <tr>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>Thời gian dự án:</td>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>Từ {boardData?.startDate} Đến {boardData?.endDate}</td>
+              <td style={{ fontSize: 18, fontWeight: 500 }}>
+                Thời gian dự án:
+              </td>
+              <td style={{ fontSize: 18, fontWeight: 500 }}>
+                Từ {boardData?.startDate} Đến {boardData?.endDate}
+              </td>
             </tr>
             <tr>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>Trạng thái dự án:</td>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>{statusOptions[boardData?.status]}</td>
+              <td style={{ fontSize: 18, fontWeight: 500 }}>
+                Trạng thái dự án:
+              </td>
+              <td style={{ fontSize: 18, fontWeight: 500 }}>
+                {statusOptions[boardData?.status]}
+              </td>
             </tr>
-
           </table>
           <Button danger type="dashed" onClick={() => setShowModal1(true)}>
             Hiển thị thông báo ({boardData?.notifications?.length || 0})
@@ -848,46 +1006,89 @@ const DetailsProjectComponent = () => {
                 </Tooltip>
               ))}
             </Avatar.Group>
-            {userData === "Admin" || userData === "Manager" ?
-              <Button style={{ marginTop: 8, marginLeft: 10 }} type="primary" onClick={handleModalVisible} >Quản lý thành viên <UserAddOutlined /></Button>
-              : ""}
+            {userData === "Admin" || userData === "Manager" ? (
+              <Button
+                style={{ marginTop: 8, marginLeft: 10 }}
+                type="primary"
+                onClick={handleModalVisible}
+              >
+                Quản lý thành viên <UserAddOutlined />
+              </Button>
+            ) : (
+              ""
+            )}
           </div>
-
         </div>
         <div className="board">
-          {
-            columnsData.map((column, index) => (
-              <div key={index} className="column">
-                <div style={{ display: 'flex', flex: 'row', justifyContent: 'space-between' }}>
-                  <h2>{column.data.name}</h2>
-                  {userData !== "Admin" ?
+          {columnsData.map((column, index) => (
+            <div key={index} className="column">
+              <div
+                style={{
+                  display: "flex",
+                  flex: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <h2>{column.data.name}</h2>
+                {userData !== "Admin" ? (
                   <Popover
-                    content={<Button type="primary" onClick={() => handleDeleteColumn(column.id)}>Xóa column</Button>}
+                    content={
+                      <Button
+                        type="primary"
+                        onClick={() => handleDeleteColumn(column.id)}
+                      >
+                        Xóa column
+                      </Button>
+                    }
                     trigger="hover"
                   >
                     <span className="delete-icon">
                       <DashOutlined />
                     </span>
-                  </Popover> : ""}
-                </div>
-                <div className="cards">
-                  {column.cards.map((card, cardIndex) => (
-                    <div>
-                      <div style={{ display: 'flex', flex: 'row', justifyContent: 'space-between', marginTop: 10 }} key={cardIndex} className="card-column" >
-                        <div onClick={() => handleCardClick(card, column)}>
-                          <p>{card.data.name}</p>
-                          {card?.data?.label ?
-                            <>
-                              <Tag icon={<CheckCircleOutlined />} color={card?.data?.color} style={{ marginTop: 10 }}>
-                                {card?.data?.label}
-                              </Tag>
-                            </> : ""}
-                        </div>
-                        <div style={{ marginRight: 8 }}>
-                        {userData !== "Admin" ?
+                  </Popover>
+                ) : (
+                  ""
+                )}
+              </div>
+              <div className="cards">
+                {column.cards.map((card, cardIndex) => (
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: "row",
+                        justifyContent: "space-between",
+                        marginTop: 10,
+                      }}
+                      key={cardIndex}
+                      className="card-column"
+                    >
+                      <div onClick={() => handleCardClick(card, column)}>
+                        <p>{card.data.name}</p>
+                        {card?.data?.label ? (
+                          <>
+                            <Tag
+                              icon={<CheckCircleOutlined />}
+                              color={card?.data?.color}
+                              style={{ marginTop: 10 }}
+                            >
+                              {card?.data?.label}
+                            </Tag>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                      <div style={{ marginRight: 8 }}>
+                        {userData !== "Admin" ? (
                           <Popover
                             content={
-                              <Button type="primary" onClick={() => handleDeleteCard(card.id, column.id)}>
+                              <Button
+                                type="primary"
+                                onClick={() =>
+                                  handleDeleteCard(card.id, column.id)
+                                }
+                              >
                                 Xóa card
                               </Button>
                             }
@@ -896,52 +1097,86 @@ const DetailsProjectComponent = () => {
                             <span className="delete-icon">
                               <DashOutlined />
                             </span>
-                          </Popover> :""}
-                        </div>
+                          </Popover>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-                <div onClick={() => {
+                  </div>
+                ))}
+              </div>
+              <div
+                onClick={() => {
                   console.log(userData);
                   if (userData === "Admin") {
-                    return message.warning("Bạn không được phép sử dụng chức năng này")
+                    return message.warning(
+                      "Bạn không được phép sử dụng chức năng này"
+                    );
                   }
-
-                }}  >
-                  <div style={{
-                    pointerEvents: userData === "Admin" ? "none" : "auto"
-                  }}>
-                     {showAddCard !== column.id ?
-                  <a className="add-card" style={{ marginTop: 15 }} type="primary" onClick={() => handleAddCard(column.id)}>+ Thêm thẻ</a> : ""}
-                  </div>
-                </div>
-               
-                {showAddCard === column.id && (
-                  <div style={{ marginTop: 15 }}>
-                    <TextArea placeholder="Nhập tiêu đề cho thẻ này ..." rows={2} type="text" value={newCardName} onChange={(e) => setNewCardName(e.target.value)} />
-                    <Button style={{ marginTop: 8 }} type="primary" onClick={() => handleCreateCard(column.id)}>Thêm thẻ</Button>
-                    <Button
+                }}
+              >
+                <div
+                  style={{
+                    pointerEvents: userData === "Admin" ? "none" : "auto",
+                  }}
+                >
+                  {showAddCard !== column.id ? (
+                    <a
+                      className="add-card"
+                      style={{ marginTop: 15 }}
                       type="primary"
-                      shape="circle"
-                      style={{
-                        fontWeight: 500,
-                        color: "#3f4c6b",
-                        backgroundColor: "#fff",
-                        boxShadow: "none",
-                        border: "1px solid #3f4c6b",
-                        marginLeft: 8
-                      }}
-                      onClick={() => handleCloseCard(column.id)}
+                      onClick={() => handleAddCard(column.id)}
                     >
-                      X
-                    </Button>
-                  </div>
-                )}
+                      + Thêm thẻ
+                    </a>
+                  ) : (
+                    ""
+                  )}
+                </div>
               </div>
-            ))
-          }
-          <Button className="create-board-card" type="primary" icon={<PlusOutlined />} onClick={showModal}>
+
+              {showAddCard === column.id && (
+                <div style={{ marginTop: 15 }}>
+                  <TextArea
+                    placeholder="Nhập tiêu đề cho thẻ này ..."
+                    rows={2}
+                    type="text"
+                    value={newCardName}
+                    onChange={(e) => setNewCardName(e.target.value)}
+                  />
+                  <Button
+                    style={{ marginTop: 8 }}
+                    type="primary"
+                    onClick={() => handleCreateCard(column.id)}
+                  >
+                    Thêm thẻ
+                  </Button>
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    style={{
+                      fontWeight: 500,
+                      color: "#3f4c6b",
+                      backgroundColor: "#fff",
+                      boxShadow: "none",
+                      border: "1px solid #3f4c6b",
+                      marginLeft: 8,
+                    }}
+                    onClick={() => handleCloseCard(column.id)}
+                  >
+                    X
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+          <Button
+            className="create-board-card"
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={showModal}
+          >
             Thêm mới
           </Button>
         </div>
@@ -953,7 +1188,11 @@ const DetailsProjectComponent = () => {
           onCancel={handleCancel}
           okButtonProps={{ disabled: !columnName }}
         >
-          <Input placeholder="Vui lòng nhập tên cột" value={columnName} onChange={handleColumnNameChange} />
+          <Input
+            placeholder="Vui lòng nhập tên cột"
+            value={columnName}
+            onChange={handleColumnNameChange}
+          />
         </Modal>
 
         <Modal
@@ -967,33 +1206,48 @@ const DetailsProjectComponent = () => {
                 handleSave(values);
               })
               .catch((info) => {
-                console.log('Validate Failed:', info);
+                console.log("Validate Failed:", info);
               });
           }}
           onCancel={handleCloseModal}
           okText="Hoàn thành"
           cancelText="Hủy"
           width={800}
-          footer={[
-
-          ]}
+          footer={[]}
         >
-          <div onClick={() => {
-            console.log(userData);
-            if (userData === "Admin") {
-              return message.warning("Bạn không được phép sử dụng chức năng này")
-            }
-
-          }}  >
-            <div style={{
-              pointerEvents: userData === "Admin" ? "none" : "auto"
-            }}>
+          <div
+            onClick={() => {
+              console.log(userData);
+              if (userData === "Admin") {
+                return message.warning(
+                  "Bạn không được phép sử dụng chức năng này"
+                );
+              }
+            }}
+          >
+            <div
+              style={{
+                pointerEvents: userData === "Admin" ? "none" : "auto",
+              }}
+            >
               <Row>
                 <Col span={16}>
                   <div style={{ marginTop: 15, marginBottom: 10 }}>
-                    <ScheduleOutlined style={{ marginRight: 5 }} /> Tiêu đề
-                    <div>{dataCard?.name}</div>
-                    {visibleTitle ?
+                    <div style={{fontSize:'16px',fontWeight:'bold',color:'#0077b6'}}>
+                    <ScheduleOutlined style={{ marginRight: 5 }} /> 
+                    <span> Tên thẻ công việc </span>
+                    {!visibleTitle ? (
+                      <EditOutlined
+                        style={{ marginLeft:5}}
+                        type="text"
+                        onClick={() => setVisibleTitle(true)}
+                      /> 
+                    ) : (
+                      ""
+                    )}
+                    </div>
+                    <div style={{fontSize:'16px',marginLeft:'10px'}}>{dataCard?.name}</div>
+                    {visibleTitle ? (
                       <Form
                         form={titleForm3}
                         name="eventUpdate"
@@ -1005,37 +1259,84 @@ const DetailsProjectComponent = () => {
                           rules={[
                             {
                               required: true,
-                              message: 'Vui lòng nhập mô tả!',
+                              message: "Tên thẻ trống!",
                             },
                           ]}
-                          style={{ marginBottom: 5 }}
                         >
-                          <Input.TextArea rows={1} placeholder="Tiêu đề" />
+                          <Input.TextArea rows={1} placeholder="Nhập tên thẻ..." />
                         </Form.Item>
-                        <Button style={{ marginTop: 10 }} type="primary" onClick={() => handleAddTitle()}>Thêm mô tả</Button>
-                        <Button style={{ marginTop: 10, marginLeft: 10 }} type="default" onClick={() => setVisibleTitle(!visibleTitle)}>Hủy</Button>
-
-                      </Form> : ""}
-                    {!visibleTitle ?
-                      <Button style={{ marginTop: 10 }} type="primary" onClick={() => setVisibleTitle(true)}>Cập nhật</Button> : ""}
+                        <Button
+                          style={{}}
+                          type="link"
+                          onClick={() => handleAddTitle()}
+                        >
+                          Lưu
+                        </Button>
+                        <Button
+                          style={{color:'gray'}}
+                          type="link"
+                          onClick={() => setVisibleTitle(!visibleTitle)}
+                        >
+                          Hủy
+                        </Button>
+                      </Form>
+                    ) : (
+                      ""
+                    )}
+                    
                   </div>
-                  <div style={{ marginTop: 15, marginBottom: 10 }}>
-                    <TagOutlined style={{ marginRight: 5 }} /> Nhãn
+                  <div style={{ marginTop: 10, marginBottom: 5 }}>
+                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#5e548e'}}>
+                    <TagOutlined style={{ marginRight: 5 }} />
+                    <span> Nhãn công việc</span> 
+                    </div>
                   </div>
-                  <div style={{ marginTop: 10 }}>
-                    {dataCard?.label ?
+                  <div style={{ marginTop: 5 }}>
+                    {dataCard?.label ? (
                       <>
-                        <Tag icon={<CheckCircleOutlined />} color={dataCard?.color} style={{ marginTop: 10 }}>
+                        <Tag
+                          icon={<CheckCircleOutlined />}
+                          color={dataCard?.color}
+                          style={{ marginTop: 10 }}
+                        >
                           {dataCard?.label}
                         </Tag>
-                      </> : ""}
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </div>
-
-                  <div style={{ marginTop: 15, marginBottom: 10 }}>
-                    <AlignLeftOutlined style={{ marginRight: 5 }} /> Mô tả
+                  <div>
+                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#d62828'}}>
+                    <CalendarOutlined style={{ marginRight: 5,marginTop: 15 }}  />
+                    <span>Ngày hết hạn</span>
+                  </div>
+                    {dataCard?.dateEnd ? (
+                      <Statistic
+                        value={dataCard?.dateEnd}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  <div style={{ marginTop: 10, marginBottom: 10 }}>
+                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#3c6997'}}>
+                    <AlignLeftOutlined style={{ marginRight: 5 }} /> 
+                   <span> Mô tả thẻ công việc</span>
+                   {!visibleDes ? (
+                    <EditOutlined
+                      style={{ marginTop: 10, marginLeft:5 }}
+                      type="primary"
+                      onClick={() => handleShowDes()}
+                    />
+                     
+                  ) : (
+                    ""
+                  )}
+                    </div>
                   </div>
                   <div>{dataCard?.description}</div>
-                  {visibleDes ?
+                  {visibleDes ? (
                     <Form
                       form={desForm3}
                       name="eventUpdate"
@@ -1047,53 +1348,102 @@ const DetailsProjectComponent = () => {
                         rules={[
                           {
                             required: true,
-                            message: 'Vui lòng nhập mô tả!',
+                            message: "Vui lòng nhập mô tả!",
                           },
                         ]}
                         style={{ marginBottom: 5 }}
                       >
-                        <Input.TextArea rows={2} placeholder="Mô tả" />
+                        <Input.TextArea rows={2} placeholder="Nhập mô tả công việc..." />
                       </Form.Item>
-                      <Button style={{ marginTop: 10 }} type="primary" onClick={() => handleAddDescription()}>Thêm mô tả</Button>
-                      <Button style={{ marginTop: 10, marginLeft: 10 }} type="default" onClick={() => setVisibleDes(!visibleDes)}>Hủy</Button>
-
-                    </Form> : ""}
-                  {!visibleDes ?
-                    <Button style={{ marginTop: 10 }} type="primary" onClick={() => handleShowDes()}>Mô tả</Button> : ""}
+                      <Button
+                        style={{ marginTop: 10 }}
+                        type="link"
+                        onClick={() => handleAddDescription()}
+                      >
+                        Lưu
+                      </Button>
+                      <Button
+                        style={{ marginTop: 10, marginLeft: 10,color: 'gray' }}
+                        type="link"
+                        onClick={() => setVisibleDes(!visibleDes)}
+                      >
+                        Hủy
+                      </Button>
+                    </Form>
+                  ) : (
+                    ""
+                  )}
+                
 
                   <div style={{ marginTop: 10 }}>
-                    <CheckSquareOutlined style={{ marginRight: 5, marginBottom: 10 }} /> Việc cần làm
+                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#ff7900'}}>
+                    <CheckSquareOutlined
+                      style={{ marginRight: 5, marginBottom: 10 }}
+                    />{" "}
+                   <span> Việc cần làm</span>
+                   {!visibleTask ? (
+                    <PlusCircleOutlined
+                      style={{ marginTop: 10, marginLeft:10 }}
+                      type="primary"
+                      onClick={() => handleShowTask()}
+                    />
+                  ) : (
+                    ""
+                  )}
+                  </div>
                   </div>
 
-                  <div >
-                    <Progress percent={numberCardDone} format={(percent) => `${percent.toFixed(2)}%`} />
+                  <div>
+                    <Progress
+                      percent={numberCardDone}
+                      format={(percent) => `${percent.toFixed(2)}%`}
+                    />
                   </div>
-                  {dataCard?.tasks ?
+                  {dataCard?.tasks ? (
                     <List
                       style={{ marginBottom: 10 }}
                       itemLayout="horizontal"
                       dataSource={dataCard?.tasks}
                       renderItem={(item, index) => (
-                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: 'center', marginTop: 10 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: 10,
+                          }}
+                        >
                           <div>
-                            <Checkbox value={index} onChange={onChangeCheckbox} checked={item.done}>
+                            <Checkbox
+                              value={index}
+                              onChange={onChangeCheckbox}
+                              checked={item.done}
+                            >
                               <div>{getUserInfo(item?.member)}</div>
                               {item?.name}
                               <div>{item?.dateEnd}</div>
                             </Checkbox>
                           </div>
-                          <div>
-                            <Button type="primary" icon={<EditOutlined />} onClick={() => handleEditTask2(item)}>
-                              Sửa
-                            </Button>
-                            <Button type="danger" icon={<DeleteOutlined />} onClick={() => handleDeleteTask(item)}>
-                              Xóa
-                            </Button>
+                          <div style={{marginRight:'10px'}}>
+                            <EditOutlined
+                              style={{marginRight:10, color:'#0077b6'}}
+                              icon={<EditOutlined />}
+                              onClick={() => handleEditTask2(item)}
+                            />
+                            <DeleteOutlined
+                              style={{color:'#e63946'}}
+                              icon={<DeleteOutlined />}
+                              onClick={() => handleDeleteTask(item)}
+                            />
                           </div>
                         </div>
                       )}
-                    /> : ""}
-                  {visibleTask ?
+                    />
+                  ) : (
+                    ""
+                  )}
+                  {visibleTask ? (
                     <Form
                       form={taskForm3}
                       name="eventUpdate"
@@ -1105,124 +1455,177 @@ const DetailsProjectComponent = () => {
                         rules={[
                           {
                             required: true,
-                            message: 'Vui lòng nhập tên task!',
+                            message: "Vui lòng nhập tên task!",
                           },
                         ]}
                         style={{ marginBottom: 5 }}
                       >
                         <Input placeholder="Tên task" />
                       </Form.Item>
-                      <Form.Item
-                        name="dateEnd"
-                        style={{ marginBottom: 5 }}
-                      >
+                      <Form.Item name="dateEnd" style={{ marginBottom: 5 }}>
                         <DatePicker />
                       </Form.Item>
-                      <Form.Item
-                        name="member"
-                        style={{ marginBottom: 5 }}
-                      >
+                      <Form.Item name="member" style={{ marginBottom: 5 }}>
                         <Select
-                          style={{ width: '100%' }}
+                          style={{ width: "100%" }}
                           placeholder="Chọn thành viên"
                           itemLayout="horizontal"
                         >
                           {boardData.member?.map((item, index) => (
                             <Select.Option key={index} value={item.id}>
-                              <div style={{ display: 'flex', flexDirection: 'row' }}>
-
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                }}
+                              >
                                 <Avatar src={item.img} />
                                 <div style={{ marginLeft: 10 }}>
-                                  <div style={{ fontWeight: 'bold' }}>{item.displayName}</div>
+                                  <div style={{ fontWeight: "bold" }}>
+                                    {item.displayName}
+                                  </div>
                                   <div>{item.position}</div>
                                 </div>
-
                               </div>
                             </Select.Option>
                           ))}
                         </Select>
                       </Form.Item>
 
-                      <Button style={{ marginTop: 10 }} type="primary" onClick={() => handleAddTask()}>Thêm</Button>
-                      <Button style={{ marginTop: 10, marginLeft: 10 }} type="default" onClick={() => setVisibleTask(!visibleTask)}>Hủy</Button>
-
-                    </Form> : ""}
-                  {!visibleTask ?
-                    <Button style={{ marginTop: 10 }} type="primary" onClick={() => handleShowTask()}>Thêm task</Button> : ""}
+                      <Button
+                        style={{ marginTop: 10 }}
+                        type="primary"
+                        onClick={() => handleAddTask()}
+                      >
+                        Thêm
+                      </Button>
+                      <Button
+                        style={{ marginTop: 10, marginLeft: 10 }}
+                        type="default"
+                        onClick={() => setVisibleTask(!visibleTask)}
+                      >
+                        Hủy
+                      </Button>
+                    </Form>
+                  ) : (
+                    ""
+                  )}
+                 
 
                   <div style={{ marginTop: 15, marginBottom: 10 }}>
-                    <AlignLeftOutlined style={{ marginRight: 5 }} /> Hoạt động
+                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#008000'}}>
+                    <CommentOutlined style={{ marginRight: 5 }} /> Hoạt động
                   </div>
-                  {visibleComment ?
+                  </div>
+                  {dataCard?.comments ? (
+                    <List
+                      style={{ marginTop: 15,marginBottom: 15 }}
+                      itemLayout="horizontal"
+                      dataSource={dataCard?.comments}
+                      renderItem={(item, index) => (
+                        <List.Item
+                          style={{
+                            borderRadius: "10px",
+                            boxShadow:
+                              "2px 4px 10px 1px rgba(201, 201, 201, 0.6)",
+                          }}
+                          actions={[
+                            <DeleteOutlined
+                              style={{color:'#e5383b',marginRight:'10px'}}
+                              type="link"
+                              onClick={() => handleDeleteComment(item)}
+                            />
+                          ]}
+                        >
+                          <List.Item.Meta
+                          style={{marginLeft:'10px'}}
+                            avatar={<Avatar src={item.img} />}
+                            title= {item?.displayName}
+                            description={item?.text}
+                          />
+                          <div style={{ color: "#adb5bd", fontSize: "12px",marginTop:'25px' }}>
+                            {item.time
+                              ? moment(item.time).format("DD/MM/YYYY HH:mm")
+                              : ""}
+                          </div>
+                        </List.Item>
+                      )}
+                    />
+                  ) : (
+                    ""
+                  )}
                     <Form
                       form={commentForm3}
                       name="eventUpdate"
                       layout="vertical"
                       scrollToFirstError
+                      style={{display: 'flex',justifyContent: 'space-between',
+                      alignItems: 'center'}}
                     >
                       <Form.Item
+                  
                         name="comment"
                         rules={[
                           {
                             required: true,
-                            message: 'Vui lòng nhập mô tả!',
+                            message: "Nội dung trống!",
                           },
                         ]}
-                        style={{ marginBottom: 5 }}
+                        style={{ marginBottom: 5,width:'90%' }}
                       >
-                        <Input.TextArea rows={2} placeholder="Mô tả" />
+                        <Input.TextArea
+                          rows={2}
+                          placeholder="Viết bình luận..."
+                        />
                       </Form.Item>
-                      <Button style={{ marginTop: 10 }} type="primary" onClick={() => handleAddComment()}>Bình luận</Button>
-                      <Button style={{ marginTop: 10, marginLeft: 10 }} type="default" onClick={() => setVisibleComment(!visibleComment)}>Hủy</Button>
-                    </Form> : ""}
-                  {!visibleComment ?
-                    <Button style={{ marginTop: 10 }} type="primary" onClick={() => handleShowComment()}>Bình luận</Button> : ""}
-                  {dataCard?.comments ?
-                    <List
-                      style={{ marginTop: 15 }}
-                      itemLayout="horizontal"
-                      dataSource={dataCard?.comments}
-                      renderItem={(item, index) => (
-                        <List.Item
-                          actions={[
-                            <Button type="link" onClick={() => handleEditComment(item)}>Sửa</Button>,
-                            <Button type="link" onClick={() => handleDeleteComment(item)}>Xóa</Button>
-                          ]}
-                        >
-                          <List.Item.Meta
-                            avatar={<Avatar src={item.img} />}
-                            title={<a href="https://ant.design">{item?.displayName}</a>}
-                            description={item?.text}
-                          />
-                          <div>{item.time ? moment(item.time).format('DD/MM/YYYY HH:mm') : ""}</div>
-                        </List.Item>
-                      )}
-                    /> : ""}
+                      <SendOutlined
+                        style={{fontSize:'20px',color:'#219ebc' }}
+                        type="primary"
+                        onClick={() => handleAddComment()}
+                      />
+                    </Form>
+                  
                 </Col>
                 <Col span={7} style={{ marginLeft: 20, marginTop: 15 }}>
                   <div style={{ marginTop: 15, marginBottom: 10 }}>
-                    {/* <div className="group-button-task">
-                  <TeamOutlined style={{ marginRight: 5 }} /> Thành viên
-                </div> */}
-                    <div className="group-button-task" onClick={() => showModalLabel()}>
-                      <TagOutlined style={{ marginRight: 5 }} /> Nhãn
+                   
+                    <div
+                      className="group-button-task"
+                      onClick={() => showModalLabel()}
+                      style={{backgroundColor:'#0077b6',color:'#fff'}}
+                    >
+                      <TagOutlined style={{ marginRight: 5 }} /> Cập nhật nhãn
                     </div>
-                    <div className="group-button-task">
-                      <StockOutlined style={{ marginRight: 5 }} /> Tiến độ đạt: {numberCardDone}%
+                    <div className="group-button-task"
+                    style={{backgroundColor:'#29bf12',color:'#fff'}}>
+                      <StockOutlined style={{ marginRight: 5 }} /> Tiến độ đạt {" "}
+                      {numberCardDone}%
                     </div>
-                    {userData === "Manager" || userData === "Admin" ?
-                      <div className="group-button-task" onClick={() => handleShowModalDate()}>
-                        <FieldTimeOutlined style={{ marginRight: 5 }} /> Thời gian hoàn thành
-                      </div> : ""}
-                    {userData === "Manager" || userData === "Admin" ?
-                      <div className="group-button-task" onClick={() => handleShowModalMoveCard()}>
-                        <ArrowRightOutlined style={{ marginRight: 5 }} /> Di chuyển
-                      </div> : ""}
+                    {userData === "Manager" || userData === "Admin" ? (
+                      <div
+                        className="group-button-task"
+                        onClick={() => handleShowModalDate()}
+                        style={{backgroundColor:'#f79d65',color:'#fff'}}
+                      >
+                        <FieldTimeOutlined style={{ marginRight: 5 }} /> Cập nhật thời gian
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    {userData === "Manager" || userData === "Admin" ? (
+                      <div
+                        className="group-button-task"
+                        onClick={() => handleShowModalMoveCard()}
+                        style={{backgroundColor:'#ed6a5a',color:'#fff'}}
+                      >
+                        <ArrowRightOutlined style={{ marginRight: 5 }} /> Di
+                        chuyển
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
-                  <div>
-                    {dataCard?.dateEnd ? <Statistic title="Ngày hết hạn" value={dataCard?.dateEnd} prefix={<CalendarOutlined />} />
-                      : ""}
-                  </div>
+                  
                 </Col>
               </Row>
             </div>
@@ -1237,15 +1640,15 @@ const DetailsProjectComponent = () => {
         >
           <Select
             showSearch
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
             placeholder="Nhập email thành viên"
             optionFilterProp="children"
             onChange={handleSelectChange}
             filterOption={false}
           >
             {filteredUsers.map((item, index) => (
-              <Select.Option key={index} value={item.id} >
-                <div className="modal-group" >
+              <Select.Option key={index} value={item.id}>
+                <div className="modal-group">
                   <List.Item.Meta
                     className="modal-member"
                     avatar={<Avatar src={item.img} className="member-avatar" />}
@@ -1259,7 +1662,11 @@ const DetailsProjectComponent = () => {
             ))}
           </Select>
           <div>
-            <MemberList boardData={boardData} boardId={id} handleMemberData={handleMemberData} />
+            <MemberList
+              boardData={boardData}
+              boardId={id}
+              handleMemberData={handleMemberData}
+            />
           </div>
         </Modal>
 
@@ -1270,7 +1677,13 @@ const DetailsProjectComponent = () => {
           footer={null}
         >
           <div>
-            <LabelList boardData={boardData} boardId={id} columnId={columnId} cardId={cardId} handleCardData={handleCardData} />
+            <LabelList
+              boardData={boardData}
+              boardId={id}
+              columnId={columnId}
+              cardId={cardId}
+              handleCardData={handleCardData}
+            />
           </div>
         </Modal>
 
@@ -1281,7 +1694,13 @@ const DetailsProjectComponent = () => {
           footer={null}
         >
           <div>
-            <DateList boardData={boardData} boardId={id} columnId={columnId} cardId={cardId} handleCardData={handleCardData} />
+            <DateList
+              boardData={boardData}
+              boardId={id}
+              columnId={columnId}
+              cardId={cardId}
+              handleCardData={handleCardData}
+            />
           </div>
         </Modal>
 
@@ -1292,7 +1711,15 @@ const DetailsProjectComponent = () => {
           footer={null}
         >
           <div>
-            <MoveCardList boardData={boardData} boardId={id} columnId={columnId} cardId={cardId} cardData={dataCard} handleCardData={handleCardData} handleCloseModal={handleCloseModalAll} />
+            <MoveCardList
+              boardData={boardData}
+              boardId={id}
+              columnId={columnId}
+              cardId={cardId}
+              cardData={dataCard}
+              handleCardData={handleCardData}
+              handleCloseModal={handleCloseModalAll}
+            />
           </div>
         </Modal>
 
@@ -1309,7 +1736,7 @@ const DetailsProjectComponent = () => {
             name="editCommentForm"
             layout="vertical"
             initialValues={{
-              comment: editingComment?.text
+              comment: editingComment?.text,
             }}
             scrollToFirstError
           >
@@ -1318,7 +1745,7 @@ const DetailsProjectComponent = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng nhập mô tả!',
+                  message: "Vui lòng nhập mô tả!",
                 },
               ]}
               style={{ marginBottom: 5 }}
@@ -1347,7 +1774,7 @@ const DetailsProjectComponent = () => {
             initialValues={{
               name: selectedTask?.name || "",
               dateEnd: moment(selectedTask?.dateEnd),
-              member: selectedTask?.member
+              member: selectedTask?.member,
             }}
           >
             <Form.Item
@@ -1374,25 +1801,22 @@ const DetailsProjectComponent = () => {
             >
               <DatePicker format="DD/MM/YYYY" />
             </Form.Item>
-            <Form.Item
-              name="member"
-              style={{ marginBottom: 5 }}
-            >
+            <Form.Item name="member" style={{ marginBottom: 5 }}>
               <Select
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 placeholder="Chọn thành viên"
                 itemLayout="horizontal"
               >
                 {boardData.member?.map((item, index) => (
                   <Select.Option key={index} value={item.id}>
-                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-
+                    <div style={{ display: "flex", flexDirection: "row" }}>
                       <Avatar src={item.img} />
                       <div style={{ marginLeft: 10 }}>
-                        <div style={{ fontWeight: 'bold' }}>{item.displayName}</div>
+                        <div style={{ fontWeight: "bold" }}>
+                          {item.displayName}
+                        </div>
                         <div>{item.position}</div>
                       </div>
-
                     </div>
                   </Select.Option>
                 ))}
@@ -1416,9 +1840,20 @@ const DetailsProjectComponent = () => {
                   title={notification.displayName}
                   description={notification.title}
                 />
-                <div style={{ display: 'flex', justifyContent: 'right', alignItems: 'flex-end', flexDirection: 'column' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "right",
+                    alignItems: "flex-end",
+                    flexDirection: "column",
+                  }}
+                >
                   <div>{notification.message}</div>
-                  <div>{notification.time ? moment(notification.time).format('DD/MM/YYYY HH:mm') : ""}</div>
+                  <div>
+                    {notification.time
+                      ? moment(notification.time).format("DD/MM/YYYY HH:mm")
+                      : ""}
+                  </div>
                 </div>
               </List.Item>
             )}
