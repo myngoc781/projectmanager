@@ -5,62 +5,22 @@ import { userColumns, userRows } from "../../datatablesource";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { db, storage } from "../../firbase";
+import { collection, deleteDoc, addDoc, getDoc, where, getDocs, onSnapshot, doc, updateDoc, query, orderBy } from "firebase/firestore";
 import {
-  collection,
-  deleteDoc,
-  addDoc,
-  getDoc,
-  where,
-  getDocs,
-  onSnapshot,
-  doc,
-  updateDoc,
-  query,
-  orderBy,
-} from "firebase/firestore";
-import {
-  Col,
-  Row,
-  Typography,
-  Spin,
-  Button,
-  PageHeader,
-  Card,
-  Badge,
-  Empty,
-  Input,
-  Form,
-  Pagination,
-  Modal,
-  Popconfirm,
-  notification,
-  BackTop,
-  Tag,
-  Upload,
-  Select,
-  Popover,
-  Avatar,
-  DatePicker,
-  Tooltip,
-} from "antd";
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
-  PlusOutlined,
-  UploadOutlined,
-  EyeOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+  Col, Row, Typography, Spin, Button, PageHeader, Card, Badge, Empty, Input,
+  Form, Pagination, Modal, Popconfirm, notification, BackTop, Tag, Upload, Select, Popover, Avatar, DatePicker
+} from 'antd';
+import { EditOutlined, EllipsisOutlined, SettingOutlined, PlusOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons';
 import { boardsRef } from "../../api/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import moment from "moment";
+import moment from 'moment';
 
 const { Meta } = Card;
 const { Option } = Select;
 const { TextArea } = Input;
 
 const ProjectComponent = () => {
+
   const [data, setData] = useState([]);
   const [form] = Form.useForm();
   const [boards, setBoards] = useState([]);
@@ -72,7 +32,7 @@ const ProjectComponent = () => {
   const [selectedBoard, setSelectedBoard] = useState(null);
   const [users, setUsers] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [userData, setUserData] = useState(null);
 
   const navigate = useNavigate();
@@ -82,8 +42,8 @@ const ProjectComponent = () => {
   };
 
   const handleDetailView = (board) => {
-    navigate("/projects/" + board.id);
-  };
+    navigate("/projects/" + board.id)
+  }
 
   const [valueUpdate, setValueUpdate] = useState(null);
 
@@ -108,9 +68,9 @@ const ProjectComponent = () => {
       image: image,
       createdAt: new Date(),
       columns: [],
-      startDate: values.startDate.format("YYYY-MM-DD"),
-      endDate: values.endDate.format("YYYY-MM-DD"),
-      status: values.status,
+      startDate: values.startDate.format('YYYY-MM-DD'),
+      endDate: values.endDate.format('YYYY-MM-DD'),
+      status: values.status
     };
     try {
       const docRef = await addDoc(boardsRef, board);
@@ -128,6 +88,7 @@ const ProjectComponent = () => {
     }
     setLoading(false);
   };
+
 
   const handleChangeImage = (e) => {
     const file = e.target.files[0];
@@ -160,7 +121,7 @@ const ProjectComponent = () => {
           notification.success({
             message: "Upload ảnh thành công!",
           });
-          setImage(downloadURL);
+          setImage(downloadURL)
         });
       }
     );
@@ -171,9 +132,9 @@ const ProjectComponent = () => {
     if (type === "create") {
       setOpenModalCreate(false);
     } else {
-      setOpenModalUpdate(false);
+      setOpenModalUpdate(false)
     }
-    console.log("Clicked cancel button");
+    console.log('Clicked cancel button');
   };
 
   useEffect(() => {
@@ -182,7 +143,9 @@ const ProjectComponent = () => {
     setUserData(user2.position);
 
     const unsub = onSnapshot(
-      query(collection(db, "boards"), orderBy("name")),
+      query(collection(db, "boards"),
+        orderBy("name")
+      ),
       (snapshot) => {
         let boardList = [];
 
@@ -202,10 +165,8 @@ const ProjectComponent = () => {
         }
 
         boardList = boardList.filter((board) => {
-          return (
-            board.name.toLowerCase().includes(searchText.toLowerCase()) ||
-            board.description.toLowerCase().includes(searchText.toLowerCase())
-          );
+          return board.name.toLowerCase().includes(searchText.toLowerCase()) ||
+            board.description.toLowerCase().includes(searchText.toLowerCase());
         });
 
         console.log(boardList);
@@ -229,8 +190,8 @@ const ProjectComponent = () => {
       name: values.name,
       description: values.description,
       image: image || selectedBoard.image,
-      startDate: values.startDate.format("YYYY-MM-DD"),
-      endDate: values.endDate.format("YYYY-MM-DD"),
+      startDate: values.startDate.format('YYYY-MM-DD'),
+      endDate: values.endDate.format('YYYY-MM-DD'),
       status: values.status,
     };
     console.log(board);
@@ -268,108 +229,69 @@ const ProjectComponent = () => {
     }
   }
 
+
   return (
-    <div
-      className="datatable"
-      style={{ backgroundColor: "#cfdbd5" }}
-    >
-      <Spin spinning={loading} className="hi">
+
+    <div className="datatable">
+      <Spin spinning={loading}>
         <div className="datatableTitle">
           Danh sách dự án
-          <Input.Search
-            placeholder="Tìm kiếm"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 300, marginBottom: 16 }}
-          />
-          {userData === "Manager" || userData === "Admin" ? (
-            <Button
-              style={{
-                fontWeight: "bold",
-                fontSize: "15px",
-                color: "while",
-                backgroundColor: "#38b000",
-              }}
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={showModal}
-            >
+          {userData === "Admin" ?
+            <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
               Thêm mới
-            </Button>
-          ) : (
-            ""
-          )}
+            </Button> : ""}
         </div>
-
-        <Row className="row" gutter={16}>
+        <Input.Search
+          placeholder="Tìm kiếm"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 300, marginBottom: 16 }}
+        />
+        <Row gutter={16}>
           {boards.map((board) => (
             <Col span={5} key={board.id} className="list-board">
               <Card
-                className="cart"
                 cover={
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      marginTop: "5px",
-                    }}
-                  >
-                    <img
-                      alt="example"
-                      src={board.image}
-                      style={{
-                        width: "95%",
-                        height: 170,
-                        boxShadow: "2px 4px 10px 1px rgba(201, 201, 201, 0.47)",
-                      }}
-                    />
-                  </div>
+                  <img
+                    alt="example"
+                    src={board.image}
+                    style={{ width: '100%', height: 170 }}
+                  />
                 }
                 actions={[
-                  <Tooltip  title="Xem chi tiết" >
-                    <EyeOutlined
-                      style={{ color: "#219ebc" }}
-                      key="view"
-                      onClick={() => handleDetailView(board)}
-                    />
-                  </Tooltip>,
-                  <Tooltip title="Chỉnh sửa dự án">
-                  <EditOutlined
-                    style={{ color: "#008000" }}
-                    key="edit"
-                    onClick={(e) => handleOptionsClick(e, board)}
-                  />
-                  </Tooltip>,
+                  <EyeOutlined key="view" onClick={() => handleDetailView(board)} />,
+                  <EditOutlined key="edit" onClick={(e) => handleOptionsClick(e, board)} />,
+
                   <Popover
                     content={
                       <div className="group-button">
-                        <p>Xóa dự án này?</p>
-                        <Button
-                          type="ghost"
-                          style={{
-                            marginTop: 6,
-                            color: "white",
-                            backgroundColor: "#ef233c",
-                          }}
-                          onClick={() => {
-                            deleteBoard(selectedBoardId);
-                            setSelectedBoardId(null);
-                          }}
-                        >
-                          Xóa
-                        </Button>
+                        <>
+                          {userData === "Admin" ?
+                            <Button
+                              style={{ marginTop: 6 }}
+                              onClick={() => {
+                                deleteBoard(selectedBoardId);
+                                setSelectedBoardId(null);
+                              }}
+                            >
+                              Xóa
+                            </Button>
+                              : ""}
+                        </>
                       </div>
                     }
-                    open={selectedBoardId === board.id}
-                    onOpenChange={(visible) =>
-                      setSelectedBoardId(visible ? board.id : null)
-                    }
+                    visible={selectedBoardId === board.id}
+                    onVisibleChange={(visible) => setSelectedBoardId(visible ? board.id : null)}
                   >
-                    <DeleteOutlined style={{ color: "#f07167" }} key="delete" />
+                    <EllipsisOutlined key="ellipsis" />
                   </Popover>,
                 ]}
               >
-                <Meta title={board.name} description={board.description} />
+                <Meta
+                  avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel" />}
+                  title={board.name}
+                  description={board.description}
+                />
               </Card>
             </Col>
           ))}
@@ -387,7 +309,7 @@ const ProjectComponent = () => {
                 handleOkUser(values);
               })
               .catch((info) => {
-                console.log("Validate Failed:", info);
+                console.log('Validate Failed:', info);
               });
           }}
           onCancel={() => handleCancel("create")}
@@ -400,8 +322,8 @@ const ProjectComponent = () => {
             name="eventCreate"
             layout="vertical"
             initialValues={{
-              residence: ["zhejiang", "hangzhou", "xihu"],
-              prefix: "86",
+              residence: ['zhejiang', 'hangzhou', 'xihu'],
+              prefix: '86',
             }}
             scrollToFirstError
           >
@@ -411,7 +333,7 @@ const ProjectComponent = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập tên!",
+                  message: 'Vui lòng nhập tên!',
                 },
               ]}
               style={{ marginBottom: 10 }}
@@ -424,7 +346,7 @@ const ProjectComponent = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập mô tả!",
+                  message: 'Vui lòng nhập mô tả!',
                 },
               ]}
               style={{ marginBottom: 10 }}
@@ -437,12 +359,12 @@ const ProjectComponent = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn ngày bắt đầu!",
+                  message: 'Vui lòng chọn ngày bắt đầu!',
                 },
               ]}
               style={{ marginBottom: 10 }}
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item
               name="endDate"
@@ -450,12 +372,14 @@ const ProjectComponent = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn ngày kết thúc!",
+                  message: 'Vui lòng chọn ngày kết thúc!',
                 },
               ]}
               style={{ marginBottom: 10 }}
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker style={{ width: '100%' }}
+
+              />
             </Form.Item>
             <Form.Item
               name="status"
@@ -463,7 +387,7 @@ const ProjectComponent = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn trạng thái!",
+                  message: 'Vui lòng chọn trạng thái!',
                 },
               ]}
               style={{ marginBottom: 10 }}
@@ -475,134 +399,130 @@ const ProjectComponent = () => {
               </Select>
             </Form.Item>
             <Form.Item name="image">
-              <input
-                type="file"
-                onChange={handleChangeImage}
-                id="avatar"
-                name="file"
-                accept="image/png, image/jpeg"
-              />
+              <input type="file" onChange={handleChangeImage} id="avatar" name="file" accept="image/png, image/jpeg" />
             </Form.Item>
           </Form>
         </Modal>
 
-        <Modal
-          title="Chỉnh sửa dự án"
-          visible={openModalUpdate}
-          style={{ top: 100 }}
-          onOk={() => {
-            form
-              .validateFields()
-              .then((values) => {
-                form.resetFields();
-                handleOkUpdate(values);
-              })
-              .catch((info) => {
-                console.log("Validate Failed:", info);
-              });
-          }}
-          onCancel={() => handleCancel("update")}
-          okText="Hoàn thành"
-          cancelText="Hủy"
-          width={600}
-        >
-          <Form
-            form={form}
-            name="eventUpdate"
-            layout="vertical"
-            initialValues={{
-              name: valueUpdate?.name,
-              description: valueUpdate?.description,
-              startDate: moment(valueUpdate?.startDate),
-              endDate: moment(valueUpdate?.endDate),
-              status: valueUpdate?.status,
+        {userData === "Admin" ?
+          <Modal
+            title="Chỉnh sửa dự án"
+            visible={openModalUpdate}
+            style={{ top: 100 }}
+            onOk={() => {
+              form
+                .validateFields()
+                .then((values) => {
+                  form.resetFields();
+                  handleOkUpdate(values);
+                })
+                .catch((info) => {
+                  console.log('Validate Failed:', info);
+                });
             }}
-            scrollToFirstError
+            onCancel={() => handleCancel("update")}
+            okText="Hoàn thành"
+            cancelText="Hủy"
+            width={600}
           >
-            <Form.Item
-              name="name"
-              label="Tên"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập tên!",
-                },
-              ]}
-              style={{ marginBottom: 10 }}
+            <Form
+              form={form}
+              name="eventUpdate"
+              layout="vertical"
+              initialValues={{
+                name: valueUpdate?.name,
+                description: valueUpdate?.description,
+                startDate: moment(valueUpdate?.startDate),
+                endDate: moment(valueUpdate?.endDate),
+                status: valueUpdate?.status
+              }}
+              scrollToFirstError
             >
-              <Input placeholder="Tên" />
-            </Form.Item>
-            <Form.Item
-              name="description"
-              label="Mô tả"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập mô tả!",
-                },
-              ]}
-              style={{ marginBottom: 10 }}
-            >
-              <Input placeholder="Mô tả" />
-            </Form.Item>
+              <Form.Item
+                name="name"
+                label="Tên"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập tên!',
+                  },
+                ]}
+                style={{ marginBottom: 10 }}
+              >
+                <Input placeholder="Tên" />
+              </Form.Item>
+              <Form.Item
+                name="description"
+                label="Mô tả"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập mô tả!',
+                  },
+                ]}
+                style={{ marginBottom: 10 }}
+              >
+                <Input placeholder="Mô tả" />
+              </Form.Item>
 
-            <Form.Item
-              name="startDate"
-              label="Ngày bắt đầu"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ngày bắt đầu!",
-                },
-              ]}
-              style={{ marginBottom: 10 }}
-            >
-              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
-            </Form.Item>
-            <Form.Item
-              name="endDate"
-              label="Ngày kết thúc"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ngày kết thúc!",
-                },
-              ]}
-              style={{ marginBottom: 10 }}
-            >
-              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
-            </Form.Item>
-            <Form.Item
-              name="status"
-              label="Trạng thái"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn trạng thái!",
-                },
-              ]}
-              style={{ marginBottom: 10 }}
-            >
-              <Select placeholder="Chọn trạng thái">
-                <Option value="completed">Hoàn thành</Option>
-                <Option value="inProgress">Đang triển khai</Option>
-                <Option value="onHold">Tạm dừng</Option>
-              </Select>
-            </Form.Item>
+              <Form.Item
+                name="startDate"
+                label="Ngày bắt đầu"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng chọn ngày bắt đầu!',
+                  },
+                ]}
+                style={{ marginBottom: 10 }}
+              >
+                <DatePicker format="DD/MM/YYYY" style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item
+                name="endDate"
+                label="Ngày kết thúc"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng chọn ngày kết thúc!',
+                  },
+                ]}
+                style={{ marginBottom: 10 }}
+              >
+                <DatePicker format="DD/MM/YYYY" style={{ width: '100%' }}
 
-            <Form.Item name="image">
-              <input
-                type="file"
-                onChange={handleChangeImage}
-                id="avatar"
-                name="file"
-                accept="image/png, image/jpeg"
-              />
-            </Form.Item>
-          </Form>
-        </Modal>
+                />
+              </Form.Item>
+              <Form.Item
+                name="status"
+                label="Trạng thái"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng chọn trạng thái!',
+                  },
+                ]}
+                style={{ marginBottom: 10 }}
+              >
+                <Select placeholder="Chọn trạng thái">
+                  <Option value="completed">Hoàn thành</Option>
+                  <Option value="inProgress">Đang triển khai</Option>
+                  <Option value="onHold">Tạm dừng</Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item name="image">
+                <input type="file" onChange={handleChangeImage}
+                  id="avatar" name="file"
+                  accept="image/png, image/jpeg" />
+              </Form.Item>
+            </Form>
+          </Modal>
+          : ""}
+
+
       </Spin>
-    </div>
+    </div >
   );
 };
 
