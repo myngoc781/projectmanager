@@ -71,6 +71,7 @@ const Login = () => {
         const user = userCredential.user;
         dispatch({ type: "LOGIN", payload: user });
         const user2 = JSON.parse(localStorage.getItem("user2"));
+        navigate("/");
         if(user2.position === "Admin"){
           navigate("/");
         }else{

@@ -12,6 +12,7 @@ import {
   query,
   where
 } from 'firebase/firestore';
+import { EyeFilled,DeleteFilled } from '@ant-design/icons';
 
 const Datatable = () => {
   const [data, setData] = useState([]);
@@ -105,16 +106,16 @@ const Datatable = () => {
       ),
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: (text, record) => (
         <div className="cellAction">
           <Link to={"/users/" + record.key} style={{ textDecoration: 'none' }}>
-            <Button type="primary">Xem</Button>
+            <EyeFilled />
           </Link>
-          <Button type="danger" onClick={() => handleDelete(record.key)}>
-            Xóa
-          </Button>
+          <DeleteFilled style={{color:'red'}} type="danger" onClick={() => handleDelete(record.key)}>
+            </DeleteFilled>
+          
         </div>
       ),
     },

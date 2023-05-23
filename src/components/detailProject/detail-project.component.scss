@@ -65,8 +65,12 @@
 
   .cellAction {
     display: flex;
-    align-items: center;
     gap: 15px;
+    margin-left: 10px;
+    font-size: 18px;
+    justify-content: flex-start;
+    align-content: flex-end;
+    align-items: center;
 
     .viewButton {
       padding: 2px 5px;
