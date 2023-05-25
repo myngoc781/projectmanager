@@ -51,13 +51,14 @@
         align-items: center;
         padding: 5px;
         cursor: pointer;
+    
       }
 
-      li:hover {
+      li:hover, li:focus {
         background-color: #00b4d8;
         border-radius: 20px;
       }
-
+     
       li .icon {
         font-size: 18px;
         color: gray;

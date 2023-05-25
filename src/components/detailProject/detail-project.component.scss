@@ -2,12 +2,14 @@
   font-size: 15px;
 }
 
-.datatable {
+.datatables {
+  width: calc(100% - 200px) ;
+  float: right;
 .tablett{
   font-size: 15px;
   margin-left: 50px;
   border-radius: 20px;
-
+  margin-top: 20px;
 }
 
   .datatableTitle{

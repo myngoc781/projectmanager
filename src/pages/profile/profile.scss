@@ -1,6 +1,6 @@
 .single {
   .singleContainer {
-    width: calc(100% - 250px);
+    width: calc(100% - 200px);
     float: right;
     inset: 0;
     background: #dee2ff;
@@ -14,7 +14,7 @@
       padding: 20px;
       margin: 50px;
       display: flex;
-      width: calc(100% - 250px);
+      width: calc(100% - 200px);
       align-content: center;
       flex-wrap: wrap;
     }
@@ -33,9 +33,9 @@
           gap: 20px;
 
           .itemImg {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            border-radius: 20%;
             object-fit: cover;
           }
 
@@ -47,7 +47,7 @@
 
             .detailItem {
               margin-bottom: 10px;
-              font-size: 14px;
+              font-size: 16px;
 
               .itemKey {
                 font-weight: bold;

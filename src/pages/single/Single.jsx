@@ -39,8 +39,12 @@ const Single = () => {
             <div className="details">
               <h1 className="itemTitle">{userData?.name}</h1>
               <div className="detailItem">
-                <span className="itemKey">Tên:</span>
+                <span className="itemKey">Họ và tên:</span>
                 <span className="itemValue">{userData?.displayName}</span>
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Tên người dùng:</span>
+                <span className="itemValue">{userData?.userName}</span>
               </div>
               <div className="detailItem">
                 <span className="itemKey">Email:</span>
@@ -57,6 +61,10 @@ const Single = () => {
               <div className="detailItem">
                 <span className="itemKey">Vị trí:</span>
                 <span className="itemValue">{userData?.position}</span>
+              </div>
+              <div className="detailItem">
+                <span className="itemKey">Ngày bắt đầu làm việc:</span>
+                <span className="itemValue">{userData?.startDate}</span>
               </div>
             </div>
           </div>

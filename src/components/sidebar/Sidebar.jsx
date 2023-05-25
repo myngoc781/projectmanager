@@ -52,7 +52,7 @@ const Sidebar = () => {
             <p className="title">TRANG CHỦ</p>
 
             <Link to="/" style={{ textDecoration: "none" }}>
-              <li>
+              <li >
                 <DashboardIcon className="icon" />
                 <span>Thống kê</span>
               </li>
@@ -70,12 +70,12 @@ const Sidebar = () => {
                 <span>Dự án</span>
               </li>
             </Link>
-            <Link to="/projects" style={{ textDecoration: "none" }}>
+            {/* <Link to="/projects" style={{ textDecoration: "none" }}>
               <li>
                 <CalendarMonth className="icon" />
                 <span>Lịch trình</span>
               </li>
-            </Link>
+            </Link> */}
 
             <p className="title">NGƯỜI DÙNG</p>
             <Link to="/profile" style={{ textDecoration: "none" }}>

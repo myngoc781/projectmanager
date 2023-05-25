@@ -42,6 +42,7 @@ import {
   Avatar,
   Checkbox,
   message,
+  Badge,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -63,6 +64,7 @@ import {
   SendOutlined,
   DeleteFilled,
   PlusCircleOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 import { boardsRef } from "../../api/firebase";
 import AddForm from "../addForm/add-form.component";
@@ -952,52 +954,46 @@ const DetailsProjectComponent = () => {
   };
 
   return (
-    <div className="datatable">
+    <div className="datatables">
       <Spin spinning={loading}>
         <div
           style={{
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            backgroundColor: "#457b9d",
+            color: "#fff",
+            alignItems: "center",
+            boxShadow: "2px 4px 10px 1px rgba(201, 201, 201, 0.47)"
           }}
-        >
-          <table>
+        > 
+        <div>
+          <table className="tablett">
             <tr>
-              <td style={{ fontSize: 21, fontWeight: 600 }}>Dự án:</td>
+              <td style={{ fontSize: 15, fontWeight: "bold" }}>Dự án:</td>
               <td style={{ fontSize: 21, fontWeight: 600 }}>
                 {boardData?.name}
               </td>
             </tr>
             <tr>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>Mô tả dự án:</td>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>
-                {boardData?.description}
-              </td>
+              <td style={{ fontSize: 15, fontWeight: "bold" }}>Mô tả dự án:</td>
+              <td>{boardData?.description}</td>
             </tr>
             <tr>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>
+              <td style={{ fontSize: 15, fontWeight: "bold" }}>
                 Thời gian dự án:
               </td>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>
+              <td >
                 Từ {boardData?.startDate} Đến {boardData?.endDate}
               </td>
             </tr>
             <tr>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>
+              <td style={{ fontSize: 15, fontWeight: "bold" }}>
                 Trạng thái dự án:
               </td>
-              <td style={{ fontSize: 18, fontWeight: 500 }}>
-                {statusOptions[boardData?.status]}
-              </td>
+              <td>{statusOptions[boardData?.status]}</td>
             </tr>
           </table>
-          <Button danger type="dashed" onClick={() => setShowModal1(true)}>
-            Hiển thị thông báo ({boardData?.notifications?.length || 0})
-          </Button>
-        </div>
-        <hr style={{ marginBottom: 10 }}></hr>
-        <div className="datatableTitle">
-          <div></div>
           <div className="groupUser">
             <Avatar.Group>
               {boardData?.member?.map((user, index) => (
@@ -1008,16 +1004,44 @@ const DetailsProjectComponent = () => {
             </Avatar.Group>
             {userData === "Admin" || userData === "Manager" ? (
               <Button
-                style={{ marginTop: 8, marginLeft: 10 }}
+                style={{ marginTop: 8,
+                  marginLeft: 10,
+                  color: "#0077b6",
+                  backgroundColor: "#fff",}}
                 type="primary"
                 onClick={handleModalVisible}
               >
-                Quản lý thành viên <UserAddOutlined />
+                <UserAddOutlined />
+                Quản lý thành viên 
               </Button>
             ) : (
               ""
             )}
+        </div>
+
           </div>
+          <Button
+            style={{
+              margin: "30px",
+              marginRight: "60px",
+              display: "flex",
+              alignItems: "center",
+              color: "#e63946",
+            }}
+            onClick={() => setShowModal1(true)}
+          >
+            <BellOutlined />
+            Thông báo
+            <Badge
+              style={{ marginLeft: "5px" }}
+              count={boardData?.notifications?.length || 0}
+            ></Badge>
+          </Button>
+        </div>
+        <hr style={{ marginBottom: 10 }}></hr>
+        <div className="datatableTitle">
+          <div></div>
+          
         </div>
         <div className="board">
           {columnsData.map((column, index) => (
@@ -1068,7 +1092,6 @@ const DetailsProjectComponent = () => {
                         {card?.data?.label ? (
                           <>
                             <Tag
-                              icon={<CheckCircleOutlined />}
                               color={card?.data?.color}
                               style={{ marginTop: 10 }}
                             >
@@ -1230,23 +1253,31 @@ const DetailsProjectComponent = () => {
                 pointerEvents: userData === "Admin" ? "none" : "auto",
               }}
             >
-              <Row>
+              <Row style={{ maxHeight: "700px", overflowY: "auto" }}>
                 <Col span={16}>
                   <div style={{ marginTop: 15, marginBottom: 10 }}>
-                    <div style={{fontSize:'16px',fontWeight:'bold',color:'#0077b6'}}>
-                    <ScheduleOutlined style={{ marginRight: 5 }} /> 
-                    <span> Tên thẻ công việc </span>
-                    {!visibleTitle ? (
-                      <EditOutlined
-                        style={{ marginLeft:5}}
-                        type="text"
-                        onClick={() => setVisibleTitle(true)}
-                      /> 
-                    ) : (
-                      ""
-                    )}
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color: "#0077b6",
+                      }}
+                    >
+                      <ScheduleOutlined style={{ marginRight: 5 }} />
+                      <span> Tên thẻ công việc </span>
+                      {!visibleTitle ? (
+                        <EditOutlined
+                          style={{ marginLeft: 5 }}
+                          type="text"
+                          onClick={() => setVisibleTitle(true)}
+                        />
+                      ) : (
+                        ""
+                      )}
                     </div>
-                    <div style={{fontSize:'16px',marginLeft:'10px'}}>{dataCard?.name}</div>
+                    <div style={{ fontSize: "16px", marginLeft: "10px" }}>
+                      {dataCard?.name}
+                    </div>
                     {visibleTitle ? (
                       <Form
                         form={titleForm3}
@@ -1263,7 +1294,10 @@ const DetailsProjectComponent = () => {
                             },
                           ]}
                         >
-                          <Input.TextArea rows={1} placeholder="Nhập tên thẻ..." />
+                          <Input.TextArea
+                            rows={1}
+                            placeholder="Nhập tên thẻ..."
+                          />
                         </Form.Item>
                         <Button
                           style={{}}
@@ -1273,7 +1307,7 @@ const DetailsProjectComponent = () => {
                           Lưu
                         </Button>
                         <Button
-                          style={{color:'gray'}}
+                          style={{ color: "gray" }}
                           type="link"
                           onClick={() => setVisibleTitle(!visibleTitle)}
                         >
@@ -1283,12 +1317,17 @@ const DetailsProjectComponent = () => {
                     ) : (
                       ""
                     )}
-                    
                   </div>
                   <div style={{ marginTop: 10, marginBottom: 5 }}>
-                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#5e548e'}}>
-                    <TagOutlined style={{ marginRight: 5 }} />
-                    <span> Nhãn công việc</span> 
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color: "#5e548e",
+                      }}
+                    >
+                      <TagOutlined style={{ marginRight: 5 }} />
+                      <span> Nhãn công việc</span>
                     </div>
                   </div>
                   <div style={{ marginTop: 5 }}>
@@ -1307,32 +1346,43 @@ const DetailsProjectComponent = () => {
                     )}
                   </div>
                   <div>
-                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#d62828'}}>
-                    <CalendarOutlined style={{ marginRight: 5,marginTop: 15 }}  />
-                    <span>Ngày hết hạn</span>
-                  </div>
-                    {dataCard?.dateEnd ? (
-                      <Statistic
-                        value={dataCard?.dateEnd}
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color: "#d62828",
+                      }}
+                    >
+                      <CalendarOutlined
+                        style={{ marginRight: 5, marginTop: 15 }}
                       />
+                      <span>Ngày hết hạn</span>
+                    </div>
+                    {dataCard?.dateEnd ? (
+                      <Statistic value={dataCard?.dateEnd} />
                     ) : (
                       ""
                     )}
                   </div>
                   <div style={{ marginTop: 10, marginBottom: 10 }}>
-                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#3c6997'}}>
-                    <AlignLeftOutlined style={{ marginRight: 5 }} /> 
-                   <span> Mô tả thẻ công việc</span>
-                   {!visibleDes ? (
-                    <EditOutlined
-                      style={{ marginTop: 10, marginLeft:5 }}
-                      type="primary"
-                      onClick={() => handleShowDes()}
-                    />
-                     
-                  ) : (
-                    ""
-                  )}
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color: "#3c6997",
+                      }}
+                    >
+                      <AlignLeftOutlined style={{ marginRight: 5 }} />
+                      <span> Mô tả thẻ công việc</span>
+                      {!visibleDes ? (
+                        <EditOutlined
+                          style={{ marginTop: 10, marginLeft: 5 }}
+                          type="primary"
+                          onClick={() => handleShowDes()}
+                        />
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                   <div>{dataCard?.description}</div>
@@ -1353,7 +1403,10 @@ const DetailsProjectComponent = () => {
                         ]}
                         style={{ marginBottom: 5 }}
                       >
-                        <Input.TextArea rows={2} placeholder="Nhập mô tả công việc..." />
+                        <Input.TextArea
+                          rows={2}
+                          placeholder="Nhập mô tả công việc..."
+                        />
                       </Form.Item>
                       <Button
                         style={{ marginTop: 10 }}
@@ -1363,7 +1416,7 @@ const DetailsProjectComponent = () => {
                         Lưu
                       </Button>
                       <Button
-                        style={{ marginTop: 10, marginLeft: 10,color: 'gray' }}
+                        style={{ marginTop: 10, marginLeft: 10, color: "gray" }}
                         type="link"
                         onClick={() => setVisibleDes(!visibleDes)}
                       >
@@ -1373,24 +1426,29 @@ const DetailsProjectComponent = () => {
                   ) : (
                     ""
                   )}
-                
 
                   <div style={{ marginTop: 10 }}>
-                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#ff7900'}}>
-                    <CheckSquareOutlined
-                      style={{ marginRight: 5, marginBottom: 10 }}
-                    />{" "}
-                   <span> Việc cần làm</span>
-                   {!visibleTask ? (
-                    <PlusCircleOutlined
-                      style={{ marginTop: 10, marginLeft:10 }}
-                      type="primary"
-                      onClick={() => handleShowTask()}
-                    />
-                  ) : (
-                    ""
-                  )}
-                  </div>
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color: "#ff7900",
+                      }}
+                    >
+                      <CheckSquareOutlined
+                        style={{ marginRight: 5, marginBottom: 10 }}
+                      />{" "}
+                      <span> Việc cần làm</span>
+                      {!visibleTask ? (
+                        <PlusCircleOutlined
+                          style={{ marginTop: 10, marginLeft: 10 }}
+                          type="primary"
+                          onClick={() => handleShowTask()}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </div>
 
                   <div>
@@ -1425,14 +1483,14 @@ const DetailsProjectComponent = () => {
                               <div>{item?.dateEnd}</div>
                             </Checkbox>
                           </div>
-                          <div style={{marginRight:'10px'}}>
+                          <div style={{ marginRight: "10px" }}>
                             <EditOutlined
-                              style={{marginRight:10, color:'#0077b6'}}
+                              style={{ marginRight: 10, color: "#0077b6" }}
                               icon={<EditOutlined />}
                               onClick={() => handleEditTask2(item)}
                             />
                             <DeleteOutlined
-                              style={{color:'#e63946'}}
+                              style={{ color: "#e63946" }}
                               icon={<DeleteOutlined />}
                               onClick={() => handleDeleteTask(item)}
                             />
@@ -1510,16 +1568,21 @@ const DetailsProjectComponent = () => {
                   ) : (
                     ""
                   )}
-                 
 
                   <div style={{ marginTop: 15, marginBottom: 10 }}>
-                  <div style={{fontSize:'16px',fontWeight:'bold',color:'#008000'}}>
-                    <CommentOutlined style={{ marginRight: 5 }} /> Hoạt động
-                  </div>
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color: "#008000",
+                      }}
+                    >
+                      <CommentOutlined style={{ marginRight: 5 }} /> Hoạt động
+                    </div>
                   </div>
                   {dataCard?.comments ? (
                     <List
-                      style={{ marginTop: 15,marginBottom: 15 }}
+                      style={{ marginTop: 15, marginBottom: 15 }}
                       itemLayout="horizontal"
                       dataSource={dataCard?.comments}
                       renderItem={(item, index) => (
@@ -1531,19 +1594,25 @@ const DetailsProjectComponent = () => {
                           }}
                           actions={[
                             <DeleteOutlined
-                              style={{color:'#e5383b',marginRight:'10px'}}
+                              style={{ color: "#e5383b", marginRight: "10px" }}
                               type="link"
                               onClick={() => handleDeleteComment(item)}
-                            />
+                            />,
                           ]}
                         >
                           <List.Item.Meta
-                          style={{marginLeft:'10px'}}
+                            style={{ marginLeft: "10px" }}
                             avatar={<Avatar src={item.img} />}
-                            title= {item?.displayName}
+                            title={item?.displayName}
                             description={item?.text}
                           />
-                          <div style={{ color: "#adb5bd", fontSize: "12px",marginTop:'25px' }}>
+                          <div
+                            style={{
+                              color: "#adb5bd",
+                              fontSize: "12px",
+                              marginTop: "25px",
+                            }}
+                          >
                             {item.time
                               ? moment(item.time).format("DD/MM/YYYY HH:mm")
                               : ""}
@@ -1554,60 +1623,63 @@ const DetailsProjectComponent = () => {
                   ) : (
                     ""
                   )}
-                    <Form
-                      form={commentForm3}
-                      name="eventUpdate"
-                      layout="vertical"
-                      scrollToFirstError
-                      style={{display: 'flex',justifyContent: 'space-between',
-                      alignItems: 'center'}}
+                  <Form
+                    form={commentForm3}
+                    name="eventUpdate"
+                    layout="vertical"
+                    scrollToFirstError
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Form.Item
+                      name="comment"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Nội dung trống!",
+                        },
+                      ]}
+                      style={{ marginBottom: 5, width: "90%" }}
                     >
-                      <Form.Item
-                  
-                        name="comment"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Nội dung trống!",
-                          },
-                        ]}
-                        style={{ marginBottom: 5,width:'90%' }}
-                      >
-                        <Input.TextArea
-                          rows={2}
-                          placeholder="Viết bình luận..."
-                        />
-                      </Form.Item>
-                      <SendOutlined
-                        style={{fontSize:'20px',color:'#219ebc' }}
-                        type="primary"
-                        onClick={() => handleAddComment()}
+                      <Input.TextArea
+                        rows={2}
+                        placeholder="Viết bình luận..."
                       />
-                    </Form>
-                  
+                    </Form.Item>
+                    <SendOutlined
+                      style={{ fontSize: "20px", color: "#219ebc" }}
+                      type="primary"
+                      onClick={() => handleAddComment()}
+                    />
+                  </Form>
                 </Col>
                 <Col span={7} style={{ marginLeft: 20, marginTop: 15 }}>
                   <div style={{ marginTop: 15, marginBottom: 10 }}>
-                   
                     <div
                       className="group-button-task"
                       onClick={() => showModalLabel()}
-                      style={{backgroundColor:'#0077b6',color:'#fff'}}
+                      style={{ backgroundColor: "#0077b6", color: "#fff" }}
                     >
                       <TagOutlined style={{ marginRight: 5 }} /> Cập nhật nhãn
                     </div>
-                    <div className="group-button-task"
-                    style={{backgroundColor:'#29bf12',color:'#fff'}}>
-                      <StockOutlined style={{ marginRight: 5 }} /> Tiến độ đạt {" "}
+                    <div
+                      className="group-button-task"
+                      style={{ backgroundColor: "#29bf12", color: "#fff" }}
+                    >
+                      <StockOutlined style={{ marginRight: 5 }} /> Tiến độ đạt{" "}
                       {numberCardDone}%
                     </div>
                     {userData === "Manager" || userData === "Admin" ? (
                       <div
                         className="group-button-task"
                         onClick={() => handleShowModalDate()}
-                        style={{backgroundColor:'#f79d65',color:'#fff'}}
+                        style={{ backgroundColor: "#f79d65", color: "#fff" }}
                       >
-                        <FieldTimeOutlined style={{ marginRight: 5 }} /> Cập nhật thời gian
+                        <FieldTimeOutlined style={{ marginRight: 5 }} /> Cập
+                        nhật thời gian
                       </div>
                     ) : (
                       ""
@@ -1616,7 +1688,7 @@ const DetailsProjectComponent = () => {
                       <div
                         className="group-button-task"
                         onClick={() => handleShowModalMoveCard()}
-                        style={{backgroundColor:'#ed6a5a',color:'#fff'}}
+                        style={{ backgroundColor: "#ed6a5a", color: "#fff" }}
                       >
                         <ArrowRightOutlined style={{ marginRight: 5 }} /> Di
                         chuyển
@@ -1625,7 +1697,6 @@ const DetailsProjectComponent = () => {
                       ""
                     )}
                   </div>
-                  
                 </Col>
               </Row>
             </div>
@@ -1826,12 +1897,13 @@ const DetailsProjectComponent = () => {
         </Modal>
 
         <Modal
-          title="Danh sách thông báo"
-          visible={showModal1}
+          title="Thông báo"
+          open={showModal1}
           onCancel={() => setShowModal1(false)}
           footer={null}
         >
           <List
+            style={{ maxHeight: "500px", overflowY: "auto" }}
             itemLayout="horizontal"
             dataSource={boardData?.notifications || []}
             renderItem={(notification, index) => (

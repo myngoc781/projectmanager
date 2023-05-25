@@ -1,7 +1,7 @@
-import { Table, Button, Modal, Input } from 'antd';
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { db } from '../../firbase';
+import { Table, Button, Modal, Input } from "antd";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { db } from "../../firbase";
 import {
   collection,
   deleteDoc,
@@ -10,18 +10,18 @@ import {
   getDocs,
   onSnapshot,
   query,
-  where
-} from 'firebase/firestore';
-import { EyeFilled,DeleteFilled } from '@ant-design/icons';
-
+  where,
+} from "firebase/firestore";
+import { EyeFilled, DeleteFilled, PlusCircleFilled } from "@ant-design/icons";
+import "./datatable.scss";
 const Datatable = () => {
   const [data, setData] = useState([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteModalId, setDeleteModalId] = useState(null);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    const q = query(collection(db, 'users'));
+    const q = query(collection(db, "users"));
     const unsub = onSnapshot(
       q,
       (snapShot) => {
@@ -30,12 +30,10 @@ const Datatable = () => {
           list.push({ key: doc.id, ...doc.data() });
         });
         list = list.filter((user) => {
-          
           return user.email.toLowerCase().includes(searchText.toLowerCase());
         });
         console.log(list);
         setData(list);
-        
       },
       (error) => {
         console.log(error);
@@ -52,14 +50,14 @@ const Datatable = () => {
   };
 
   const handleDeleteConfirm = () => {
-    const docRef = doc(db, 'users', deleteModalId);
+    const docRef = doc(db, "users", deleteModalId);
     deleteDoc(docRef)
       .then(() => {
-        console.log('Document successfully deleted!');
+        console.log("Document successfully deleted!");
         setData(data.filter((item) => item.key !== deleteModalId));
       })
       .catch((error) => {
-        console.error('Error removing document: ', error);
+        console.error("Error removing document: ", error);
       });
     setDeleteModalVisible(false);
   };
@@ -70,9 +68,9 @@ const Datatable = () => {
 
   const columns = [
     {
-      title: 'Tên người dùng',
-      dataIndex: 'user',
-      key: 'user',
+      title: "Tên người dùng",
+      dataIndex: "user",
+      key: "user",
       render: (text, record) => (
         <div className="cellWithImg">
           <img className="cellImg" src={record.img} alt="avatar" />
@@ -81,24 +79,24 @@ const Datatable = () => {
       ),
     },
     {
-      title: 'Họ Tên',
-      dataIndex: 'displayName',
-      key: 'displayName',
+      title: "Họ Tên",
+      dataIndex: "displayName",
+      key: "displayName",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: 'Số điện thoại',
-      dataIndex: 'phoneNumber',
-      key: 'phoneNumber',
+      title: "Số điện thoại",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
     },
     {
-      title: 'Vị trí làm việc',
-      dataIndex: 'position',
-      key: 'position',
+      title: "Vị trí làm việc",
+      dataIndex: "position",
+      key: "position",
       render: (text, record) => (
         <div className={`cellWithPosition ${record.position}`}>
           {record.position}
@@ -106,16 +104,18 @@ const Datatable = () => {
       ),
     },
     {
-      title: 'Hành động',
-      key: 'action',
+      title: "Hành động",
+      key: "action",
       render: (text, record) => (
         <div className="cellAction">
-          <Link to={"/users/" + record.key} style={{ textDecoration: 'none' }}>
+          <Link to={"/users/" + record.key} style={{ textDecoration: "none" }}>
             <EyeFilled />
           </Link>
-          <DeleteFilled style={{color:'red'}} type="danger" onClick={() => handleDelete(record.key)}>
-            </DeleteFilled>
-          
+          <DeleteFilled
+            style={{ color: "red" }}
+            type="danger"
+            onClick={() => handleDelete(record.key)}
+          ></DeleteFilled>
         </div>
       ),
     },
@@ -125,26 +125,42 @@ const Datatable = () => {
     <div className="datatable">
       <div className="datatableTitle">
         Danh sách người dùng
-        <Link to="/users/new" className="link">
-          Tạo mới
+        <Input.Search
+          placeholder="Tìm kiếm"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 300, marginBottom: 16, marginTop: 20 }}
+        />
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", marginLeft:50,marginBottom: 20 }}>
+        <Link
+          to="/users/new"
+          style={{
+            fontWeight: "bold",
+            fontSize: "15px",
+            color: "white",
+            backgroundColor: "#0096c7",
+            display: "inline-block",
+            padding: "6px 20px",
+            textDecoration: "none",
+            borderRadius: 20,
+            alignItems: "center",
+          }}
+        >
+          {" "}
+          <PlusCircleFilled style={{ marginRight: 10 }} />
+          Thêm mới người dùng
         </Link>
       </div>
-      <Input.Search
-        placeholder="Tìm kiếm"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        style={{ width: 300, marginBottom: 16 }}
-      />
       <Table
         className="datagrid"
         dataSource={data}
         columns={columns}
-        // rowSelection={{ type: 'checkbox' }}
-        pagination={{ position: ['bottomCenter'] }}
+        pagination={{ position: ["bottomCenter"] }}
       />
       <Modal
         title="Xác nhận xóa"
-        visible={deleteModalVisible}
+        open={deleteModalVisible}
         onOk={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       >

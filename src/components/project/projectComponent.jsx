@@ -8,9 +8,9 @@ import { db, storage } from "../../firbase";
 import { collection, deleteDoc, addDoc, getDoc, where, getDocs, onSnapshot, doc, updateDoc, query, orderBy } from "firebase/firestore";
 import {
   Col, Row, Typography, Spin, Button, PageHeader, Card, Badge, Empty, Input,
-  Form, Pagination, Modal, Popconfirm, notification, BackTop, Tag, Upload, Select, Popover, Avatar, DatePicker
+  Form, Pagination, Modal, Popconfirm, notification, BackTop, Tag, Upload, Select, Popover, Avatar, DatePicker, Tooltip
 } from 'antd';
-import { EditOutlined, EllipsisOutlined, SettingOutlined, PlusOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons';
+import { EditOutlined, EllipsisOutlined, SettingOutlined, PlusOutlined, UploadOutlined, EyeOutlined, DeleteOutlined, PlusCircleFilled } from '@ant-design/icons';
 import { boardsRef } from "../../api/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import moment from 'moment';
@@ -236,61 +236,97 @@ const ProjectComponent = () => {
       <Spin spinning={loading}>
         <div className="datatableTitle">
           Danh sách dự án
-          {userData === "Admin" ?
-            <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
-              Thêm mới
-            </Button> : ""}
-        </div>
-        <Input.Search
+          <Input.Search
           placeholder="Tìm kiếm"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-          style={{ width: 300, marginBottom: 16 }}
+          style={{ width: 300, marginBottom: 16, marginTop: 20}}
         />
-        <Row gutter={16}>
+          {userData === "Admin" ?
+            <Button  style={{
+              fontWeight: "bold",
+              fontSize: "15px",
+              color: "white",
+              backgroundColor: "#0096c7",
+              display: "inline-block",
+              textDecoration: "none",
+              borderRadius: 20,
+              alignItems: "center",
+            }} type="primary" icon={<PlusCircleFilled />} onClick={showModal}>
+              Thêm mới dự án
+            </Button> : ""}
+        </div>
+        
+        <Row className="row" gutter={16}>
           {boards.map((board) => (
             <Col span={5} key={board.id} className="list-board">
               <Card
+               className="cart"
                 cover={
+                  <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "5px",
+                  }}
+                >
                   <img
                     alt="example"
                     src={board.image}
-                    style={{ width: '100%', height: 170 }}
+                    style={{  width: "95%",
+                    height: 170,
+                    boxShadow: "2px 4px 10px 1px rgba(201, 201, 201, 0.47)" }}
                   />
-                }
+        
+                </div>}
                 actions={[
-                  <EyeOutlined key="view" onClick={() => handleDetailView(board)} />,
-                  <EditOutlined key="edit" onClick={(e) => handleOptionsClick(e, board)} />,
-
+                  <Tooltip  title="Xem chi tiết" >
+                    <EyeOutlined
+                      style={{ color: "#219ebc" }}
+                      key="view"
+                      onClick={() => handleDetailView(board)}
+                    />
+                  </Tooltip>,
+                  <Tooltip title="Chỉnh sửa dự án">
+                  <EditOutlined
+                    style={{ color: "#008000" }}
+                    key="edit"
+                    onClick={(e) => handleOptionsClick(e, board)}
+                  />
+                  </Tooltip>,
                   <Popover
                     content={
                       <div className="group-button">
-                        <>
-                          {userData === "Admin" ?
-                            <Button
-                              style={{ marginTop: 6 }}
-                              onClick={() => {
-                                deleteBoard(selectedBoardId);
-                                setSelectedBoardId(null);
-                              }}
-                            >
-                              Xóa
-                            </Button>
-                              : ""}
-                        </>
+                        <p>Xóa dự án này?</p>
+                        <Button
+                          type="ghost"
+                          style={{
+                            marginTop: 6,
+                            color: "white",
+                            backgroundColor: "#ef233c",
+                          }}
+                          onClick={() => {
+                            deleteBoard(selectedBoardId);
+                            setSelectedBoardId(null);
+                          }}
+                        >
+                          Xóa
+                        </Button>
                       </div>
                     }
-                    visible={selectedBoardId === board.id}
-                    onVisibleChange={(visible) => setSelectedBoardId(visible ? board.id : null)}
+                    open={selectedBoardId === board.id}
+                    onOpenChange={(visible) =>
+                      setSelectedBoardId(visible ? board.id : null)
+                    }
                   >
-                    <EllipsisOutlined key="ellipsis" />
+                    <DeleteOutlined style={{ color: "#f07167" }} key="delete" />
                   </Popover>,
                 ]}
               >
                 <Meta
-                  avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel" />}
                   title={board.name}
                   description={board.description}
+                  status={board.status}
                 />
               </Card>
             </Col>
