@@ -40,14 +40,14 @@ export const userInputs = [
     id: "position",
     label: "Vị trí làm việc",
     options: [
+      
       { value: "supervisor", label: "Supervisor" },
       { value: "admin", label: "Admin" },
       { value: "designer", label: "Designer" },
       { value: "seller", label: "Seller" },
       { value: "manager", label: "Manager" },
       { value: "marketing", label: "Marketing" },
-      { value: "qc", label: "QC" },
-
+      
     ],
   },
   {

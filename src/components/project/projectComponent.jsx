@@ -440,7 +440,7 @@ const ProjectComponent = () => {
           </Form>
         </Modal>
 
-        {userData === "Admin" ?
+        {userData === "Admin" || userData === "Manager" ?
           <Modal
             title="Chỉnh sửa dự án"
             visible={openModalUpdate}

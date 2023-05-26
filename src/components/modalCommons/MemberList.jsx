@@ -51,7 +51,7 @@ const MemberList = ({ boardId, handleMemberData }) => {
             <div className="modal-name">TỔNG: {members?.length} THÀNH VIÊN</div>
             <hr />
             {members && members.length > 0 && !members.some((member) => member.position === 'manager') && (
-                <div>Dự án này chưa có người quản lý.</div>
+                <div></div>
             )}
             <List
                 itemLayout="horizontal"

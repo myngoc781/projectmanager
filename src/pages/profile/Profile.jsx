@@ -11,11 +11,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../firbase";
 import { Form, Input, Button, Divider, Alert, Modal, notification } from "antd";
 import { values } from "lodash";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, KeyOutlined } from "@ant-design/icons";
 
 const Single = () => {
   const [userData, setUserData] = useState(null);
   const [isVisibleModal, setVisibleModal] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   const onFinish = async (values) => {
@@ -123,15 +124,14 @@ const Single = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor:'#0077b6',
-            color:'#fff',
+            backgroundColor: "#0077b6",
+            color: "#fff",
           }}
         >
-          <h1 style={{fontSize:'25px'}}>Thông tin cá nhân</h1>
+          <h1 style={{ fontSize: "25px" }}>Thông tin cá nhân</h1>
         </div>
 
         <div className="left">
-         
           <div className="item">
             <img src={userData?.img} alt="" className="itemImg" />
             <div className="details">
@@ -166,27 +166,41 @@ const Single = () => {
               </div>
             </div>
           </div>
-          <div style={{display:'flex',justifyContent:'flex-end'}}>
-          <div
-            style={{
-              color: "#0077b6",
-              width: "190px",
-              borderRadius: "20px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => handleUpdateAccount()}
-          >
-            <EditOutlined />
-            <span style={{marginLeft: "5px" }}>
-              {" "}
-              Chỉnh sửa thông tin
-            </span>
-          </div>
+          <div style={{ display: "grid", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                color: "#fff",
+                width: "190px",
+                borderRadius: "10px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#0077b6",
+              }}
+              onClick={() => handleUpdateAccount()}
+            >
+              <EditOutlined />
+              <span style={{ marginLeft: "5px" }}> Chỉnh sửa thông tin</span>
+            </div>
+            <div
+              style={{
+                color: "#fff",
+                width: "190px",
+                borderRadius: "10px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#0077b6",
+                marginTop: "10px",
+              }}
+              onClick={() => setIsModalVisible(true)}
+            >
+              <KeyOutlined />
+              <span style={{ marginLeft: "5px" }}> Đổi mật khẩu</span>
+            </div>
           </div>
         </div>
-        
+
         <div>
           <Modal
             title="Cập nhật thông tin cá nhân"
@@ -265,98 +279,127 @@ const Single = () => {
               >
                 <Input />
               </Form.Item>
-              <Form.Item>
+              <Form.Item
+                style={{ display: "flex", justifyContent: "flex-end" }}
+              >
                 <Button type="primary" htmlType="submit">
-                  Cập nhật
+                  Lưu thay đổi
                 </Button>
               </Form.Item>
             </Form>
-            <div className="changePassword">
-          <Form
-            style={{ width: 400, marginBottom: 8 }}
-            name="normal_login"
-            form={form}
-            className="loginform"
-            initialValues={{
-              remember: true,
-            }}
-            onFinish={onFinish}
-          >
-            <Form.Item style={{ marginBottom: 3 }}>
-              <Divider
-                style={{ marginBottom: 5, fontSize: 19 }}
-                orientation="center"
-              >
-                THAY ĐỔI MẬT KHẨU
-              </Divider>
-            </Form.Item>
-            <Form.Item style={{ marginBottom: 16, textAlign: "center" }}>
-              <p className="text">Nhập thông tin dưới đây</p>
-            </Form.Item>
-
-            <Form.Item
-              name="currentPassword"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập mật khẩu cũ!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input.Password placeholder="Mật khẩu cũ" />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập mật khẩu mới!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input.Password placeholder="Mật khẩu" />
-            </Form.Item>
-
-            <Form.Item
-              name="confirm"
-              dependencies={["password"]}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Nhập lại mật khẩu mới!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-
-                    return Promise.reject(
-                      new Error("2 mật khẩu bạn nhập vào không trùng nhau!")
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input.Password placeholder="Xác minh mật khẩu" />
-            </Form.Item>
-
-            <Form.Item style={{ width: "100%", marginTop: 20 }}>
-              <Button className="button" type="primary" htmlType="submit">
-                Hoàn Thành
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
           </Modal>
-         
+          <Modal
+          style={{width:"fit-content"}}
+            title="Đổi mật khẩu"
+            open={isModalVisible}
+            onCancel={() => setIsModalVisible(false)}
+            footer={null}
+           
+          >
+            <div className="changePassword">
+              <Form
+                style={{
+                  display: "grid",
+                  justifyContent: "center",
+                }}
+                name="normal_login"
+                form={form}
+                className="loginform"
+                initialValues={{
+                  remember: true,
+                }}
+                onFinish={onFinish}
+              >
+                <Form.Item style={{ width: "300px" }}>
+                  {/* <Divider
+                    style={{
+                      marginBottom: 5,
+                      fontSize: 19,
+                      fontWeight: "bold",
+                    }}
+                    orientation="center"
+                  >
+                    Đổi mật khẩu
+                  </Divider> */}
+                </Form.Item>
+                <Form.Item
+                  name="currentPassword"
+                  style={{ width: "300px" }}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập mật khẩu cũ!",
+                    },
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password placeholder="Mật khẩu cũ" />
+                </Form.Item>
+
+                <Form.Item
+                  style={{ width: "300px" }}
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập mật khẩu mới!",
+                    },
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password placeholder="Mật khẩu" />
+                </Form.Item>
+
+                <Form.Item
+                  name="confirm"
+                  style={{ width: "300px" }}
+                  dependencies={["password"]}
+                  hasFeedback
+                  rules={[
+                    {
+                      required: true,
+                      message: "Nhập lại mật khẩu mới!",
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue("password") === value) {
+                          return Promise.resolve();
+                        }
+
+                        return Promise.reject(
+                          new Error(
+                            "Hai mật khẩu bạn nhập vào không trùng nhau!"
+                          )
+                        );
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password placeholder="Xác minh mật khẩu" />
+                </Form.Item>
+
+                <Form.Item
+                  style={{
+                    marginTop: 20,
+                    justifyContent: "flex-end",
+                    display: "flex",
+                  }}
+                >
+                  <Button
+                    className="button"
+                    type="primary"
+                    htmlType="submit"
+                    style={{ width: "fit-content" }}
+                  >
+                    Hoàn Thành
+                  </Button>
+                </Form.Item>
+              </Form>
+            </div>
+          </Modal>
+          </div>
         </div>
       </div>
-    </div>
   );
 };
 

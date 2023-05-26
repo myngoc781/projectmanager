@@ -16,6 +16,7 @@ import {
   updateDoc,
   arrayUnion,
   serverTimestamp,
+  QuerySnapshot,
 } from "firebase/firestore";
 import {
   Col,
@@ -332,6 +333,7 @@ const DetailsProjectComponent = () => {
         const taskData = values.nameTask; // Lấy data từ form
         const dateData = values.dateEnd.format("YYYY-MM-DD"); // Lấy data từ form
         const member = values.member;
+        const link = values.linkEnd;
         console.log(taskData);
         console.log(dateData);
         // Thực hiện xử lý logic của bạn với commentData
@@ -350,6 +352,7 @@ const DetailsProjectComponent = () => {
                 dateEnd: dateData,
                 done: false,
                 member: member,
+                linkEnd: link,
               }),
             });
             await handleListCard();
@@ -779,14 +782,14 @@ const DetailsProjectComponent = () => {
   const handleEditTaskSubmit = async (values) => {
     try {
       // Lấy dữ liệu từ form chỉnh sửa task
-      const { name, dateEnd } = values;
+      const { name, dateEnd, linkEnd } = values;
       // Cập nhật task trong Firestore
       const cardsRef = doc(
         db,
         `boards/${id}/columns/${columnId}/cards/${cardId}`
       );
       await updateDoc(cardsRef, {
-        tasks: arrayUnion({ ...currentTask, name, dateEnd }),
+        tasks: arrayUnion({ ...currentTask, name, dateEnd, linkEnd }),
       });
       // Thực hiện các bước xử lý khác (nếu cần)
       // ...
@@ -870,6 +873,7 @@ const DetailsProjectComponent = () => {
           name: values.name,
           dateEnd: values.dateEnd.format("YYYY-MM-DD"),
           member: values.member,
+          linkEnd: values.linkEnd,
         };
 
         try {
@@ -964,61 +968,64 @@ const DetailsProjectComponent = () => {
             backgroundColor: "#457b9d",
             color: "#fff",
             alignItems: "center",
-            boxShadow: "2px 4px 10px 1px rgba(201, 201, 201, 0.47)"
+            boxShadow: "2px 4px 10px 1px rgba(201, 201, 201, 0.47)",
           }}
-        > 
-        <div>
-          <table className="tablett">
-            <tr>
-              <td style={{ fontSize: 15, fontWeight: "bold" }}>Dự án:</td>
-              <td style={{ fontSize: 21, fontWeight: 600 }}>
-                {boardData?.name}
-              </td>
-            </tr>
-            <tr>
-              <td style={{ fontSize: 15, fontWeight: "bold" }}>Mô tả dự án:</td>
-              <td>{boardData?.description}</td>
-            </tr>
-            <tr>
-              <td style={{ fontSize: 15, fontWeight: "bold" }}>
-                Thời gian dự án:
-              </td>
-              <td >
-                Từ {boardData?.startDate} Đến {boardData?.endDate}
-              </td>
-            </tr>
-            <tr>
-              <td style={{ fontSize: 15, fontWeight: "bold" }}>
-                Trạng thái dự án:
-              </td>
-              <td>{statusOptions[boardData?.status]}</td>
-            </tr>
-          </table>
-          <div className="groupUser">
-            <Avatar.Group>
-              {boardData?.member?.map((user, index) => (
-                <Tooltip title={user.displayName} key={index}>
-                  <Avatar src={user.img} />
-                </Tooltip>
-              ))}
-            </Avatar.Group>
-            {userData === "Admin" || userData === "Manager" ? (
-              <Button
-                style={{ marginTop: 8,
-                  marginLeft: 10,
-                  color: "#0077b6",
-                  backgroundColor: "#fff",}}
-                type="primary"
-                onClick={handleModalVisible}
-              >
-                <UserAddOutlined />
-                Quản lý thành viên 
-              </Button>
-            ) : (
-              ""
-            )}
-        </div>
-
+        >
+          <div>
+            <table className="tablett">
+              <tr>
+                <td style={{ fontSize: 15, fontWeight: "bold" }}>Dự án:</td>
+                <td style={{ fontSize: 21, fontWeight: 600 }}>
+                  {boardData?.name}
+                </td>
+              </tr>
+              <tr>
+                <td style={{ fontSize: 15, fontWeight: "bold" }}>
+                  Mô tả dự án:
+                </td>
+                <td>{boardData?.description}</td>
+              </tr>
+              <tr>
+                <td style={{ fontSize: 15, fontWeight: "bold" }}>
+                  Thời gian dự án:
+                </td>
+                <td>
+                  Từ {boardData?.startDate} Đến {boardData?.endDate}
+                </td>
+              </tr>
+              <tr>
+                <td style={{ fontSize: 15, fontWeight: "bold" }}>
+                  Trạng thái dự án:
+                </td>
+                <td>{statusOptions[boardData?.status]}</td>
+              </tr>
+            </table>
+            <div className="groupUser">
+              <Avatar.Group>
+                {boardData?.member?.map((user, index) => (
+                  <Tooltip title={user.displayName} key={index}>
+                    <Avatar src={user.img} />
+                  </Tooltip>
+                ))}
+              </Avatar.Group>
+              {userData === "Admin" || userData === "Manager" ? (
+                <Button
+                  style={{
+                    marginTop: 8,
+                    marginLeft: 10,
+                    color: "#0077b6",
+                    backgroundColor: "#fff",
+                  }}
+                  type="primary"
+                  onClick={handleModalVisible}
+                >
+                  <UserAddOutlined />
+                  Quản lý thành viên
+                </Button>
+              ) : (
+                ""
+              )}
+            </div>
           </div>
           <Button
             style={{
@@ -1041,7 +1048,6 @@ const DetailsProjectComponent = () => {
         <hr style={{ marginBottom: 10 }}></hr>
         <div className="datatableTitle">
           <div></div>
-          
         </div>
         <div className="board">
           {columnsData.map((column, index) => (
@@ -1147,7 +1153,7 @@ const DetailsProjectComponent = () => {
                   {showAddCard !== column.id ? (
                     <a
                       className="add-card"
-                      style={{ marginTop: 15 }}
+                      style={{ marginTop: 15, borderRadius:10 }}
                       type="primary"
                       onClick={() => handleAddCard(column.id)}
                     >
@@ -1356,7 +1362,7 @@ const DetailsProjectComponent = () => {
                       <CalendarOutlined
                         style={{ marginRight: 5, marginTop: 15 }}
                       />
-                      <span>Ngày hết hạn</span>
+                      <span>Ngày đến hạn</span>
                     </div>
                     {dataCard?.dateEnd ? (
                       <Statistic value={dataCard?.dateEnd} />
@@ -1478,9 +1484,21 @@ const DetailsProjectComponent = () => {
                               onChange={onChangeCheckbox}
                               checked={item.done}
                             >
-                              <div>{getUserInfo(item?.member)}</div>
-                              {item?.name}
-                              <div>{item?.dateEnd}</div>
+                              <div>
+                                <span style={{fontWeight:'bold'}}>Assign:</span> {getUserInfo(item?.member)}
+                              </div>
+                              <div>
+                                <span style={{fontWeight:'bold'}}>Nội dung: </span>
+                                {item?.name}
+                              </div>
+
+                              <div>
+                                <span style={{fontWeight:'bold'}}>Hạn: </span>
+                                {item?.dateEnd}
+                              </div>
+                              <div>
+                              {item.linkEnd && <span style={{fontWeight:'bold'}}>Kết quả: </span>} {item?.linkEnd}
+                              </div>
                             </Checkbox>
                           </div>
                           <div style={{ marginRight: "10px" }}>
@@ -1520,13 +1538,29 @@ const DetailsProjectComponent = () => {
                       >
                         <Input placeholder="Tên task" />
                       </Form.Item>
+                      <Form.Item
+                        name="linkEnd"
+                        rules={[
+                          // {
+                          //   required: true,
+                          //   message: "Gắn link sản phẩm",
+                          // },
+                          {
+                            type: "url",
+                            message: "Vui lòng nhập đúng định dạng URL!",
+                          },
+                        ]}
+                        style={{ marginBottom: 5 }}
+                      >
+                        <Input placeholder="Link đính kèm" />
+                      </Form.Item>
                       <Form.Item name="dateEnd" style={{ marginBottom: 5 }}>
                         <DatePicker />
                       </Form.Item>
                       <Form.Item name="member" style={{ marginBottom: 5 }}>
                         <Select
                           style={{ width: "100%" }}
-                          placeholder="Chọn thành viên"
+                          placeholder="Giao cho..."
                           itemLayout="horizontal"
                         >
                           {boardData.member?.map((item, index) => (
@@ -1846,6 +1880,7 @@ const DetailsProjectComponent = () => {
               name: selectedTask?.name || "",
               dateEnd: moment(selectedTask?.dateEnd),
               member: selectedTask?.member,
+              linkEnd: selectedTask?.linkEnd,
             }}
           >
             <Form.Item
@@ -1859,6 +1894,22 @@ const DetailsProjectComponent = () => {
               ]}
             >
               <Input />
+            </Form.Item>
+            <Form.Item
+              name="linkEnd"
+              label="Link đính kèm:"
+              rules={[
+                {
+                  required: true,
+                  message: "Gắn link sản phẩm",
+                },
+                {
+                  type: "url",
+                  message: "Vui lòng nhập đúng định dạng URL!",
+                },
+              ]}
+            >
+              <Input format="link" />
             </Form.Item>
             <Form.Item
               name="dateEnd"
@@ -1903,33 +1954,38 @@ const DetailsProjectComponent = () => {
           footer={null}
         >
           <List
-            style={{ maxHeight: "500px", overflowY: "auto" }}
-            itemLayout="horizontal"
-            dataSource={boardData?.notifications || []}
-            renderItem={(notification, index) => (
-              <List.Item>
-                <List.Item.Meta
-                  title={notification.displayName}
-                  description={notification.title}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "right",
-                    alignItems: "flex-end",
-                    flexDirection: "column",
-                  }}
-                >
-                  <div>{notification.message}</div>
-                  <div>
-                    {notification.time
-                      ? moment(notification.time).format("DD/MM/YYYY HH:mm")
-                      : ""}
-                  </div>
-                </div>
-              </List.Item>
-            )}
-          />
+  style={{ maxHeight: "500px", overflowY: "auto" }}
+  itemLayout="horizontal"
+  dataSource={(boardData?.notifications || []).sort((a, b) => {
+    const timeA = a.time || -9999;
+    const timeB = b.time || -9999;
+    return timeB - timeA;
+  }).reverse()} // Sắp xếp và đảo ngược mảng
+  renderItem={(notification, index) => (
+    <List.Item>
+      <List.Item.Meta
+        title={notification.displayName}
+        description={notification.title}
+      />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "right",
+          alignItems: "flex-end",
+          flexDirection: "column",
+        }}
+      >
+        <div>{notification.message}</div>
+        <div>
+          {notification.time
+            ? moment(notification.time).format("DD/MM/YYYY HH:mm")
+            : ""}
+        </div>
+      </div>
+    </List.Item>
+  )}
+/>
+
         </Modal>
       </Spin>
     </div>
